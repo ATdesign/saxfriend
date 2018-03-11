@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Let Fira Sans do all its magic -->
+        <link href="https://fonts.googleapis.com/css?family=Fira+Sans&amp;subset=cyrillic" rel="stylesheet"> 
+
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>Saxophone Player's Friend</title>
+
+        <!-- The document -->
+        <link href="css/style.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- D3.js  -->
+        <script src="js/d3.min.js"></script>
+		
+		<!-- Vexflow notation -->
+		<script src="js/vexflow-min.js"></script>
+        
+        <!-- Mousetrap for key bindings -->
+        <script src="js/mousetrap.min.js"></script>
+
+    </head>
+    <body>
+
+        <!-- jQuery -->
+        <script src="js/jquery-3.1.1.min.js"></script>
+
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <link rel="stylesheet" href="css/uikit.css" />
+        <script src="js/uikit.js"></script>
+
+        <!-- Create div containers -->
+        <div class="all-container">
+            <h2 style="font-family: 'Fira Sans'">Saxophone Player's Friend</h2>
+            <ul uk-accordion="multiple: true; collapsible: false">
+                <li class="uk-open">
+                    <h3 class="uk-accordion-title"> Circle of Fifths</h3>
+                    <div class="uk-accordion-content">
+                        <div class="theory" id="theory-container"></div>
+                    </div>
+                </li>
+                <li class="uk-open">
+                    <h3 class="uk-accordion-title">Composition</h3>
+                    <div class="uk-accordion-content">
+                        <div class="chord-player">
+
+                        </div>
+                    </div>
+                </li>
+				<li class="uk-open">
+                    <h3 class="uk-accordion-title">Saxophone Fingering Chart</h3>
+                    <div class="uk-accordion-content">
+                        <div class="sax-chart">
+
+                        </div>
+                    </div>
+                </li>
+                <li class="uk-open">
+                    <h3 class="uk-accordion-title">Keyboard Entry</h3>
+                    <div class="uk-accordion-content">
+                        <div class="keyboard"></div>
+                    </div>
+                </li>
+                <li class="uk-open">
+                    <h3 class="uk-accordion-title">Guitar Entry</h3>
+                    <div class="uk-accordion-content">
+                        <div class="fretboard fb-guitar"></div>
+                        <span class="guitar-update-tuning"><span class="change">Change tuning</span>, <span class="standard">set to standard</span>, <span class="dropd">set to Drop D</span></span>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="uk-accordion-title">Options</h3>
+                    <div class="uk-accordion-content">
+                        <div class="comptools-options">
+                            <form>
+                                <fieldset class="uk-fieldset">
+
+                                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                                        <label><input class="uk-checkbox option-use-sound" type="checkbox" checked> Play sound</label>
+                                    </div>
+                                    
+                                    <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
+                                        <label><input class="uk-checkbox option-use-midi" type="checkbox"> Use MIDI output</label>
+                                    </div>
+
+                                    <div class="uk-margin">
+                                        <select class="uk-select option-midi-output"></select>
+                                    </div>
+
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+
+        <!-- Add Tone.js -->
+        <script src="js/Tone.min.js"></script>
+
+        <script type="text/javascript">
+            var comptools_sound_player = new Tone.PolySynth(8, Tone.Synth).toMaster();
+        </script>
+
+        <!-- THE test script -->
+        <script src="js/composer-tools.min.js"></script>
+		<script src="js/sax-friend.js"></script>
+
+        <!-- Create a couple of fretboards ... -->
+        <script type="text/javascript">
+            my_theory = new comptoolsTheory("theory-container");
+            
+            my_progbuild = new comptoolsChordProgressions('.chord-progressions');
+
+            my_chbuild = new comptoolsChordbuilder(".chord-builder");
+
+            st_keyboard = new comptoolsKeyboard(".keyboard", "C1-C5");
+
+            fb_guitar = new comptoolsFretboard(".fb-guitar", "E4B3G3D3A2E2");
+
+            my_chplayer = new comptoolsChordPlayer('.chord-player');
+
+            // Options for the bass
+            bass_options = {"firstFretWidth": 70,
+                "fretboardClass": "fretboard-bass",
+                "fretboardNutClass": "fretboard-nut-bass",
+                "fretCount": 17};
+            fb_bass = new comptoolsFretboard(".fb-bass", "G2D2A1E1", bass_options);
+
+            // Connect all the instruments together
+            the_glue = new InstrumentGlue();
+            the_glue.objArray.push(st_keyboard);
+            the_glue.objArray.push(fb_guitar);
+            the_glue.objArray.push(fb_bass);
+
+            st_keyboard.selection_callback = the_glue.funCallback;
+            fb_guitar.selection_callback = the_glue.funCallback;
+            fb_bass.selection_callback = the_glue.funCallback;
+
+            the_glue.theory = my_theory;
+            my_theory.selection_callback = the_glue.funHighlightNotes;
+            
+            // This is also bound to theory since chord
+            // progressions appear for the given scale
+            the_glue.chord_progressions = my_progbuild;
+
+            the_glue.chord_builder = my_chbuild;
+            my_chbuild.selection_callback = the_glue.funHighlightChordNotes;
+
+            // For the chord player, we must set the instrument glue config
+            // variable so that all elements know how to access the necessary function
+            comptools_config.instrument_glue = the_glue;
+            comptools_config.theory = my_theory;
+            comptools_config.chord_player = my_chplayer;
+            comptools_config.chord_builder = my_chbuild;
+
+            // We need to assign a handler to the sortable component
+            // since when the order is changed, the timeline must be redrawn
+            // in chord player.
+            $('#chord-list').on('change', function () {
+                my_chplayer.update_callback();
+            });
+            
+            // Options
+            my_options = new comptoolsOptions();
+            
+            // Experimental MIDI player feature
+            comptools_midi_player = new comptoolsMIDIPlayer();
+            comptools_midi_player.initialize();
+            
+            // Additional options for tuning
+            $('.guitar-update-tuning .change').on('click', function(){
+               var tuning = prompt("New tuning", fb_guitar.tuning);
+               if (tuning !== null){
+                   fb_guitar.updateTuning(tuning);
+               }
+            });
+            
+            // Predefined: standard
+            $('.guitar-update-tuning .standard').on('click', function(){
+                fb_guitar.updateTuning("E4B3G3D3A2E2");
+            });
+            
+            // Predefined: drop d
+            $('.guitar-update-tuning .dropd').on('click', function(){
+                fb_guitar.updateTuning("E4B3G3D3A2D2");
+            });
+            
+            $('.bass-update-tuning').on('click', function(){
+               var tuning = prompt("New tuning", fb_bass.tuning);
+               if (tuning !== null){
+                   fb_bass.updateTuning(tuning);
+               }
+            });
+            
+            $('.import-chord-list').on('click', function(){
+               var chtext = prompt("Paste chord list text here", "");
+               if (chtext !== null){
+                   my_chplayer.import_chords(chtext);
+               }
+            });
+            
+            $('.export-chord-list').on('click', function(){
+               var mytext = my_chplayer.export_chords();
+               prompt("Copy and save this text", mytext);
+            });
+
+        </script>
+
+    </body>
+</html>
