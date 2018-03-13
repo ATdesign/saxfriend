@@ -423,3 +423,23 @@ div.fretboard-bass{
     font-size: 0.8em;
     cursor: pointer;
 }
+
+/* Saxophone styling */
+.sax-chart-prev, .sax-chart-next{
+    width: 150px;
+    display:inline-block;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.sax-chart-now{
+    width: 200px;
+    display:inline-block;
+    margin-left: 25px;
+    margin-right: 25px;
+    border: 1px #d20050 solid;
+}
+
+.sax-chart{
+    text-align: center;
+}

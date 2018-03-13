@@ -51,6 +51,19 @@
                     </div>
                 </li>
                 <li class="uk-open">
+                    <h3 class="uk-accordion-title">Keyboard Entry</h3>
+                    <div class="uk-accordion-content">
+                        <div class="keyboard"></div>
+                    </div>
+                </li>
+                <li class="uk-open">
+                    <h3 class="uk-accordion-title">Guitar Entry</h3>
+                    <div class="uk-accordion-content">
+                        <div class="fretboard fb-guitar"></div>
+                        <span class="guitar-update-tuning"><span class="change">Change tuning</span>, <span class="standard">set to standard</span>, <span class="dropd">set to Drop D</span></span>
+                    </div>
+                </li>
+                <li class="uk-open">
                     <h3 class="uk-accordion-title">Composition</h3>
                     <div class="uk-accordion-content">
                         <div class="chord-player">
@@ -62,21 +75,10 @@
                     <h3 class="uk-accordion-title">Saxophone Fingering Chart</h3>
                     <div class="uk-accordion-content">
                         <div class="sax-chart">
-
+                            <div class="sax-chart-prev"></div>
+                            <div class="sax-chart-now"></div>
+                            <div class="sax-chart-next"></div>
                         </div>
-                    </div>
-                </li>
-                <li class="uk-open">
-                    <h3 class="uk-accordion-title">Keyboard Entry</h3>
-                    <div class="uk-accordion-content">
-                        <div class="keyboard"></div>
-                    </div>
-                </li>
-                <li class="uk-open">
-                    <h3 class="uk-accordion-title">Guitar Entry</h3>
-                    <div class="uk-accordion-content">
-                        <div class="fretboard fb-guitar"></div>
-                        <span class="guitar-update-tuning"><span class="change">Change tuning</span>, <span class="standard">set to standard</span>, <span class="dropd">set to Drop D</span></span>
                     </div>
                 </li>
                 <li>
@@ -121,64 +123,40 @@
         <!-- Create a couple of fretboards ... -->
         <script type="text/javascript">
             my_theory = new comptoolsTheory("theory-container");
-            
-            my_progbuild = new comptoolsChordProgressions('.chord-progressions');
-
-            my_chbuild = new comptoolsChordbuilder(".chord-builder");
 
             st_keyboard = new comptoolsKeyboard(".keyboard", "C1-C5");
 
             fb_guitar = new comptoolsFretboard(".fb-guitar", "E4B3G3D3A2E2");
 
-            my_chplayer = new comptoolsChordPlayer('.chord-player');
-
-            // Options for the bass
-            bass_options = {"firstFretWidth": 70,
-                "fretboardClass": "fretboard-bass",
-                "fretboardNutClass": "fretboard-nut-bass",
-                "fretCount": 17};
-            fb_bass = new comptoolsFretboard(".fb-bass", "G2D2A1E1", bass_options);
-
             // Connect all the instruments together
             the_glue = new InstrumentGlue();
             the_glue.objArray.push(st_keyboard);
             the_glue.objArray.push(fb_guitar);
-            the_glue.objArray.push(fb_bass);
 
             st_keyboard.selection_callback = the_glue.funCallback;
             fb_guitar.selection_callback = the_glue.funCallback;
-            fb_bass.selection_callback = the_glue.funCallback;
 
             the_glue.theory = my_theory;
             my_theory.selection_callback = the_glue.funHighlightNotes;
-            
-            // This is also bound to theory since chord
-            // progressions appear for the given scale
-            the_glue.chord_progressions = my_progbuild;
 
-            the_glue.chord_builder = my_chbuild;
-            my_chbuild.selection_callback = the_glue.funHighlightChordNotes;
 
             // For the chord player, we must set the instrument glue config
             // variable so that all elements know how to access the necessary function
             comptools_config.instrument_glue = the_glue;
             comptools_config.theory = my_theory;
-            comptools_config.chord_player = my_chplayer;
-            comptools_config.chord_builder = my_chbuild;
 
+            // **************************************************
+            // NB!!! We'll maybe need this to sort the notes also
+            // **************************************************
             // We need to assign a handler to the sortable component
             // since when the order is changed, the timeline must be redrawn
             // in chord player.
-            $('#chord-list').on('change', function () {
-                my_chplayer.update_callback();
-            });
+            //$('#chord-list').on('change', function () {
+            //    my_chplayer.update_callback();
+            //});
             
             // Options
             my_options = new comptoolsOptions();
-            
-            // Experimental MIDI player feature
-            comptools_midi_player = new comptoolsMIDIPlayer();
-            comptools_midi_player.initialize();
             
             // Additional options for tuning
             $('.guitar-update-tuning .change').on('click', function(){
@@ -198,24 +176,20 @@
                 fb_guitar.updateTuning("E4B3G3D3A2D2");
             });
             
-            $('.bass-update-tuning').on('click', function(){
-               var tuning = prompt("New tuning", fb_bass.tuning);
-               if (tuning !== null){
-                   fb_bass.updateTuning(tuning);
+            /*$('.import-note-list').on('click', function(){
+               var ntext = prompt("Paste chord list text here", "");
+               if (ntext !== null){
+                   my_noteplayer.import_notes(ntext);
                }
             });
             
-            $('.import-chord-list').on('click', function(){
-               var chtext = prompt("Paste chord list text here", "");
-               if (chtext !== null){
-                   my_chplayer.import_chords(chtext);
-               }
-            });
-            
-            $('.export-chord-list').on('click', function(){
-               var mytext = my_chplayer.export_chords();
-               prompt("Copy and save this text", mytext);
-            });
+            $('.export-note-list').on('click', function(){
+               var ntext = my_noteplayer.export_notes();
+               prompt("Copy and save this text", ntext);
+            });*/
+    
+            // Generate the visualization base for saxophone
+            prepare_alto_sax_chart();
 
         </script>
 
