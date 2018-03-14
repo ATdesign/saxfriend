@@ -7,6 +7,42 @@ var SF_ALTO_SAX_C_PREV = '.sax-chart-prev';
 var SF_ALTO_SAX_C_NOW = '.sax-chart-now';
 var SF_ALTO_SAX_C_NEXT = '.sax-chart-next';
 
+// Standard alto sax fingerings separate for left and right hand
+var alto_sax_notes = {
+	"A#0": {left: [1,2,3,13],   right: [1,2,3,5]},
+	"B0":  {left: [1,2,3,11],   right: [1,2,3,5]},
+	"C1":  {left: [1,2,3],      right: [1,2,3,5]},
+	"C#1": {left: [1,2,3,12],   right: [1,2,3,5]},
+	"D1":  {left: [1,2,3],      right: [1,2,3]},
+	"D#1": {left: [1,2,3],      right: [1,2,3,4]},
+	"E1":  {left: [1,2,3],      right: [1,2]},
+	"F1":  {left: [1,2,3],      right: [1]},
+	"F#1": {left: [1,2,3],      right: [2]},
+	"G1":  {left: [1,2,3],      right: []},
+	"G#1": {left: [1,2,3,10],   right: []},
+	"A1":  {left: [1,2],        right: []},
+	"A#1": {left: [1,6],        right: []},
+	"B1":  {left: [1],          right: []},
+	"C2":  {left: [2],          right: []},
+	"C#2": {left: [],           right: []},
+	"D2":  {left: [1,2,3,5],    right: [1,2,3]},
+	"D#2": {left: [1,2,3,5],    right: [1,2,3,4]},
+	"E2":  {left: [1,2,3,5],    right: [1,2]},
+	"F2":  {left: [1,2,3,5],    right: [1]},
+	"F#2": {left: [1,2,3,5],    right: [2]},
+	"G2":  {left: [1,2,3,5],    right: []},
+	"G#2": {left: [1,2,3,5,10], right: []},
+	"A2":  {left: [1,2,5],      right: []},
+	"A#2": {left: [1,5,6],      right: []},
+	"B2":  {left: [1,5],        right: []},
+	"C3":  {left: [2,5],        right: []},
+	"C#3": {left: [5],          right: []},
+	"D3":  {left: [5,9],        right: []},
+	"D#3": {left: [5,8,9],      right: []},
+	"E3":  {left: [2,3,4,5],    right: []},
+	"F3":  {left: [2,4,5],      right: []},
+	"F#3": {left: [1,3,5],      right: [1]}
+}
 
 // Insert fingering chart into container by container width
 function insert_alto_sax_chart(c_class){
