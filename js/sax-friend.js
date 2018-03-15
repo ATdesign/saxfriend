@@ -56,9 +56,56 @@ function insert_alto_sax_chart(c_class){
     d3.select(c_class).html(my_chart);
 }
 
-function prepare_alto_sax_chart(){
+function AltoSaxChart(){
+    
     // Add the three visualization elements
     insert_alto_sax_chart(SF_ALTO_SAX_C_PREV);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NOW);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NEXT);
+    
+    // Show fingering for sax key
+    
+    // By default this method expects three notes: PREV, NOW, and NEXT
+    this.show_fingering_sax_key = function(notes){
+        
+        if (notes.length>3){
+            notes = notes.slice(0,3);
+        }
+        
+        if (notes.length===2){
+            notes = notes.splice(0,0,notes[2]);
+        }
+        
+        if (notes.length===1){
+            notes = [notes[0], notes[0], notes[0]];
+        }
+        
+        // Fingerings to draw
+        var ftod = [SF_ALTO_SAX_C_PREV, SF_ALTO_SAX_C_NOW, SF_ALTO_SAX_C_NEXT];
+        
+        for (var k=0; k<ftod.length; k++){
+            var cc = ftod[k];
+            
+            // Clear all notes and remove previous highlights
+            d3.selectAll(cc + " .sf-sax-key").classed("sf-sax-active", false);
+            
+            var cn = notes[k];
+            var fn = alto_sax_notes[cn.toUpperCase()];
+            for (var l=0; l<fn["left"].length; l++){
+                d3.select(cc + " .sf-sax-l" + fn["left"][l])
+                        .classed("sf-sax-active", true);
+            }
+            for (var l=0; l<fn["right"].length; l++){
+                d3.select(cc + " .sf-sax-r" + fn["right"][l])
+                        .classed("sf-sax-active", true);
+            }
+        }
+    };
+    
+    // Show fingering for standard key
+    this.show_fingering_concert_key = function(notes){
+        
+    };
+    
 }
+
