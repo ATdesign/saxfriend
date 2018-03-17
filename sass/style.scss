@@ -451,3 +451,103 @@ div.fretboard-bass{
 .sf-sax-right.sf-sax-active{
     fill: #37d873;
 }
+
+/**************
+  Note player 
+***************/
+
+.sf-note-list-element,
+.sf-note-list-element.uk-sortable-item,
+.sf-note-list-element.uk-sortable-placeholder{
+    span.sf-note-text{
+        font-size: 0.8em;
+    }
+    
+    span.btn-delete{
+        color: red;
+    }
+
+    .uk-card-body {
+        padding: 5px 5px;
+    }
+}
+
+.sf-note-list-element div.uk-card{
+    border: 1px solid #fafafa;
+}
+
+.sf-note-list-element div.uk-card.sf-note-selected{
+    border: 1px solid #d20050;
+}
+
+/* Override rule ...*/
+#sf-note-list.uk-child-width-1-3 > *{
+    width: 25% !important;
+}
+
+
+.sf-note-header{
+    text-align: left;
+    margin-bottom: 1em;
+    .chord-text{
+        cursor: pointer;
+    }
+}
+
+.sf-note-option{
+    width: 100%;
+    font-size: 0.8em;
+    line-height: 250%;
+    .sf-note-option-label{
+        width: 50px;
+        display: inline-block;
+    }
+    .sf-note-text-input{
+        width: 40px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    .sf-note-controls{
+        cursor: pointer;
+    }
+    
+    .sf-note-delete{
+        color: red;
+    }
+}
+
+.sf-note-legato{
+    font-size: 0.8em;
+    border: 1px solid #fff;
+    cursor: pointer;
+    padding: 3px;
+}
+
+.sf-note-legato.selected{
+    border: 1px solid #666;
+}
+
+.sf-note-player .sf-note-player-controls{
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    margin-bottom: 5px;
+    .chord-play{
+        border: 1px solid #fff;
+        margin: 5px;
+        padding: 5px;
+        cursor: pointer;
+    }
+    .import-sf-note-list, .export-sf-note-list{
+        margin: 5px;
+        padding: 5px;
+        cursor: pointer;
+    }
+    .sf-note-play.selected{
+        border: 1px solid #d20050;
+    }
+    .sf-note-bpm{
+        width: 50px;
+    }
+}
+

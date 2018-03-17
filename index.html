@@ -129,15 +129,15 @@
             fb_guitar = new comptoolsFretboard(".fb-guitar", "E4B3G3D3A2E2");
 
             // Connect all the instruments together
-            the_glue = new InstrumentGlue();
+            the_glue = new InstrumentGlueSax();
             the_glue.objArray.push(st_keyboard);
             the_glue.objArray.push(fb_guitar);
 
             st_keyboard.selection_callback = the_glue.funCallback;
             fb_guitar.selection_callback = the_glue.funCallback;
 
-            the_glue.theory = my_theory;
-            my_theory.selection_callback = the_glue.funHighlightNotes;
+            /*the_glue.theory = my_theory;
+            my_theory.selection_callback = the_glue.funHighlightNotes;*/
 
 
             // For the chord player, we must set the instrument glue config
@@ -190,6 +190,10 @@
     
             // Generate the visualization base for saxophone
             my_sax = new AltoSaxChart();
+            
+            the_glue.fingering_chart = my_sax;
+            
+            my_sax.draw_fingerings("A#1"); // Test
 
         </script>
 
