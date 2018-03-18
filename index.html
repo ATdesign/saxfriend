@@ -66,7 +66,7 @@
                 <li class="uk-open">
                     <h3 class="uk-accordion-title">Composition</h3>
                     <div class="uk-accordion-content">
-                        <div class="chord-player">
+                        <div class="sf-note-player">
 
                         </div>
                     </div>
@@ -124,7 +124,7 @@
         <script type="text/javascript">
             my_theory = new comptoolsTheory("theory-container");
 
-            st_keyboard = new comptoolsKeyboard(".keyboard", "C1-C5");
+            st_keyboard = new comptoolsKeyboard(".keyboard", "C2-C6");
 
             fb_guitar = new comptoolsFretboard(".fb-guitar", "E4B3G3D3A2E2");
 
@@ -188,12 +188,12 @@
                prompt("Copy and save this text", ntext);
             });*/
     
+            // Create the player
+            my_noteplayer = new comptoolsSfNotePlayer(".sf-note-player");
+    
             // Generate the visualization base for saxophone
-            my_sax = new AltoSaxChart();
-            
+            my_sax = new AltoSaxChart();            
             the_glue.fingering_chart = my_sax;
-            
-            my_sax.draw_fingerings("A#1"); // Test
 
         </script>
 

@@ -93,62 +93,66 @@ var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-ch
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
 var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">{{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Duration:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
 var SF_NOTE_LENGTHS = ["1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "1/2", "1"];
-var SF_NOTE_PLAYER_CLASS = 'chord-player';
-var SF_NOTE_LIST_ID = "chord-list";
-var SF_NOTE_LIST_ITEM_CLASS = "chord-list-element";
+var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
+var SF_NOTE_LIST_ID = "sf-note-list";
+var SF_NOTE_LIST_ITEM_CLASS = "sf-note-list-element";
 
 // Standard alto sax fingerings separate for left and right hand
 var alto_sax_notes = {
-    "A#0": {left: [1, 2, 3, 13], right: [1, 2, 3, 5]},
-    "B0": {left: [1, 2, 3, 11], right: [1, 2, 3, 5]},
-    "C1": {left: [1, 2, 3], right: [1, 2, 3, 5]},
-    "C#1": {left: [1, 2, 3, 12], right: [1, 2, 3, 5]},
-    "D1": {left: [1, 2, 3], right: [1, 2, 3]},
-    "D#1": {left: [1, 2, 3], right: [1, 2, 3, 4]},
-    "E1": {left: [1, 2, 3], right: [1, 2]},
-    "F1": {left: [1, 2, 3], right: [1]},
-    "F#1": {left: [1, 2, 3], right: [2]},
-    "G1": {left: [1, 2, 3], right: []},
-    "G#1": {left: [1, 2, 3, 10], right: []},
-    "A1": {left: [1, 2], right: []},
-    "A#1": {left: [1, 6], right: []},
-    "B1": {left: [1], right: []},
-    "C2": {left: [2], right: []},
-    "C#2": {left: [], right: []},
-    "D2": {left: [1, 2, 3, 5], right: [1, 2, 3]},
-    "D#2": {left: [1, 2, 3, 5], right: [1, 2, 3, 4]},
-    "E2": {left: [1, 2, 3, 5], right: [1, 2]},
-    "F2": {left: [1, 2, 3, 5], right: [1]},
-    "F#2": {left: [1, 2, 3, 5], right: [2]},
-    "G2": {left: [1, 2, 3, 5], right: []},
-    "G#2": {left: [1, 2, 3, 5, 10], right: []},
-    "A2": {left: [1, 2, 5], right: []},
-    "A#2": {left: [1, 5, 6], right: []},
-    "B2": {left: [1, 5], right: []},
-    "C3": {left: [2, 5], right: []},
-    "C#3": {left: [5], right: []},
-    "D3": {left: [5, 9], right: []},
-    "D#3": {left: [5, 8, 9], right: []},
-    "E3": {left: [2, 3, 4, 5], right: []},
-    "F3": {left: [2, 4, 5], right: []},
-    "F#3": {left: [1, 3, 5], right: [1]}
+    "A#3": {left: [1, 2, 3, 13], right: [1, 2, 3, 5]},
+    "B3": {left: [1, 2, 3, 11], right: [1, 2, 3, 5]},
+    "C4": {left: [1, 2, 3], right: [1, 2, 3, 5]},
+    "C#4": {left: [1, 2, 3, 12], right: [1, 2, 3, 5]},
+    "D4": {left: [1, 2, 3], right: [1, 2, 3]},
+    "D#4": {left: [1, 2, 3], right: [1, 2, 3, 4]},
+    "E4": {left: [1, 2, 3], right: [1, 2]},
+    "F4": {left: [1, 2, 3], right: [1]},
+    "F#4": {left: [1, 2, 3], right: [2]},
+    "G4": {left: [1, 2, 3], right: []},
+    "G#4": {left: [1, 2, 3, 10], right: []},
+    "A4": {left: [1, 2], right: []},
+    "A#4": {left: [1, 6], right: []},
+    "B4": {left: [1], right: []},
+    "C5": {left: [2], right: []},
+    "C#5": {left: [], right: []},
+    "D5": {left: [1, 2, 3, 5], right: [1, 2, 3]},
+    "D#5": {left: [1, 2, 3, 5], right: [1, 2, 3, 4]},
+    "E5": {left: [1, 2, 3, 5], right: [1, 2]},
+    "F5": {left: [1, 2, 3, 5], right: [1]},
+    "F#5": {left: [1, 2, 3, 5], right: [2]},
+    "G5": {left: [1, 2, 3, 5], right: []},
+    "G#5": {left: [1, 2, 3, 5, 10], right: []},
+    "A5": {left: [1, 2, 5], right: []},
+    "A#5": {left: [1, 5, 6], right: []},
+    "B5": {left: [1, 5], right: []},
+    "C6": {left: [2, 5], right: []},
+    "C#6": {left: [5], right: []},
+    "D6": {left: [5, 9], right: []},
+    "D#6": {left: [5, 8, 9], right: []},
+    "E6": {left: [2, 3, 4, 5], right: []},
+    "F6": {left: [2, 4, 5], right: []},
+    "F#6": {left: [1, 3, 5], right: [1]}
 }
 
+// Global counter and chord placeholder
+var sf_note_list_counter = 0;
+var sf_note_list = [];
+
 // Fetch note from semitone distance to B-1
-function from_semitone_distance(dist){
-    var sci_ind = Math.floor((dist-1)/12);
-    var note_index = (dist+11) % 12;
+function from_semitone_distance(dist) {
+    var sci_ind = Math.floor((dist - 1) / 12);
+    var note_index = (dist + 11) % 12;
     return note_array[note_index] + sci_ind;
 }
 
-function transpose_note(note, semi){
-    
+function transpose_note(note, semi) {
+
     // Get note data
     var semid = get_semitone_distance(note);
-    
+
     // Move the note
-    return from_semitone_distance(semid+semi);
-    
+    return from_semitone_distance(semid + semi);
+
 }
 
 // Insert fingering chart into container by container width
@@ -156,7 +160,7 @@ function insert_alto_sax_chart(c_class) {
     if (c_class[0] !== ".") {
         c_class = "." + c_class
     }
-    
+
     var cont_width = parseFloat(d3.select(c_class).style("width"));
     var cont_height = SF_ALTO_SAX_CHART_K * cont_width;
     var my_chart = SF_ALTO_SAX_CHART
@@ -170,52 +174,215 @@ function draw_alto_fingering(note, cc) {
 
     // Clear all notes and remove previous highlights
     d3.selectAll(cc + " .sf-sax-key").classed("sf-sax-active", false);
-    
+
     // Fetch the fingering
     var fn = alto_sax_notes[note.toUpperCase()];
-    
-    for (var l = 0; l < fn["left"].length; l++) {
-        d3.select(cc + " .sf-sax-l" + fn["left"][l])
-                .classed("sf-sax-active", true);
+
+    if (typeof fn !== "undefined") {
+        d3.selectAll(cc + " .sf-sax-key").classed("sf-sax-out-of-range", false);
+        for (var l = 0; l < fn["left"].length; l++) {
+            d3.select(cc + " .sf-sax-l" + fn["left"][l])
+                    .classed("sf-sax-active", true);
+        }
+
+        for (var l = 0; l < fn["right"].length; l++) {
+            d3.select(cc + " .sf-sax-r" + fn["right"][l])
+                    .classed("sf-sax-active", true);
+        }
+    } else {
+        // Not in range or note not found
+        d3.selectAll(cc + " .sf-sax-key").classed("sf-sax-out-of-range", true);
     }
 
-    for (var l = 0; l < fn["right"].length; l++) {
-        d3.select(cc + " .sf-sax-r" + fn["right"][l])
-                .classed("sf-sax-active", true);
+
+}
+
+
+function add_sf_note_to_player(note) {
+    var my_note = new comptoolsSfNotePlayerElement(note);
+    sf_note_list.push(my_note);
+
+    // Because the relationship is many to one, we'll have to use
+    // a config variable here---reference to instrument glue.
+    // Therefore, it must be assigned beforehand.
+    if (typeof comptools_config.instrument_glue !== "undefined") {
+        my_note.selection_callback =
+                comptools_config
+                .instrument_glue
+                .funHighlightSfNoteListElementNotes;
+    }
+
+    if (typeof comptools_config.sf_note_player !== "undefined") {
+        comptools_config.sf_note_player.update_callback();
+    }
+
+    play_sf_note(note, 0.5);
+}
+
+// Audio context sound player
+function play_sf_note(note, len) {
+    // Check if there is audio context and that sound is enabled
+    if (typeof comptools_sound_player !== "undefined" && comptools_config.play_sound)
+    {
+        comptools_sound_player.triggerAttackRelease(note, len);
+    }
+
+    // If there is MIDI support and MIDI is enabled, then play midi
+    if (typeof comptools_midi_player !== "undefined" &&
+            comptools_midi_player.ready && comptools_config.play_midi) {
+        comptools_midi_player.sendOnOffMessage(note, 1000 * len);
+    }
+
+}
+;
+
+// Audio context sound player
+function player_play_sf_note(note, len) {
+
+    // Play the sound
+    if (typeof comptools_sound_player !== "undefined" && comptools_config.play_sound)
+    {
+        comptools_sound_player.triggerAttackRelease(notes, len);
+    }
+
+    if (typeof comptools_midi_player !== "undefined" &&
+            comptools_midi_player.ready && comptools_config.play_midi) {
+        comptools_midi_player.CyclicSendOnMessage(notes);
     }
 }
+;
+
+// Parse the sf note player
+function parse_sf_note_player() {
+
+    // Get the current order
+    var play_order_ids = [];
+    d3.selectAll('#' + SF_NOTE_LIST_ID + ' .' + SF_NOTE_LIST_ITEM_CLASS).
+            each(function () {
+                play_order_ids.push(d3.select(this).attr('id'));
+            });
+
+    // Go through all id's and find a selected chord,
+    // if any; defaults to first chord
+    var my_elem, sf_note_selected = -1;
+    for (var k = 0; k < play_order_ids.length; k++) {
+        if (d3.select('#' + SF_NOTE_LIST_ID + ' #'
+                + play_order_ids[k] + ' div.uk-card')
+                .classed('sf-note-selected')) {
+            chord_selected = k;
+            break;
+        }
+    }
+
+    // NB! Note that notes marked as "legato" will NOT play if they are
+    // selected and represent an actual continuation of the previous
+    // chord(s). Thus, the user must always select the first note in the
+    // progression to hear the full duration. (TODO: Maybe fix this?)
+
+    // Create the event list
+    var current_sf_note, unchanged_sf_note;
+    var unchanged_sf_note_event_ind = 0;  // This is used to update lengths
+
+    // Start position
+    var start_position = 0;
+
+    // Total duration
+    var total_dur = 0;
+
+    var sf_note_play_events = [];  // Local scope
+    for (var k = 0; k < play_order_ids.length; k++) {
+
+        current_sf_note = sf_note_list.get_obj_by_prop('elem_id',
+                play_order_ids[k]);
+
+        // Store the first chord to unchanged_chord so we can update
+        // it with additional length if legatos are used in sequence
+        if (k === 0) {
+            unchanged_sf_note = current_sf_note;
+            unchanged_sf_note_event_ind = 0;
+        }
+
+        // Check whether this chord is the same as unchanged_chord and there
+        // is a legato mark present (for all chords after the first one)
+        var do_legato = false;
+        if (k > 0 && current_sf_note.my_note === unchanged_sf_note.my_note &&
+                current_sf_note.legato) {
+            do_legato = true;
+        }
+
+        // Get current duration
+        var now_dur = get_duration_in_seconds(current_sf_note.get_dur());
+
+        // Figure out start position by selected note
+        if (sf_note_selected !== -1 && k < sf_note_selected) {
+            start_position += now_dur;
+        }
+
+        // Create the event
+        var my_event = {
+            "object": current_sf_note,
+            "highlight_id": current_sf_note.elem_id,
+            "note": current_sf_note.my_note,
+            "duration": now_dur,
+            "interval": now_dur,
+            "legato": do_legato
+        };
+
+        // Get sum of all durations
+        total_dur += now_dur;
+
+        sf_note_play_events.push(my_event);
+
+        // Legato?
+        if (do_legato) {
+            sf_note_play_events[unchanged_sf_note_event_ind].duration +=
+                    get_duration_in_seconds(current_sf_note.get_dur());
+        } else {
+            unchanged_sf_note = current_sf_note;
+            unchanged_sf_note_event_ind = k;
+        }
+
+    }
+
+    // Return play events and the selected note
+    return {"events": sf_note_play_events,
+        "selected_chord": sf_note_selected,
+        "start_position": start_position,
+        "total_duration": total_dur};
+}
+
 
 // Some additions to existing classes
 // Draw particular note, e.g., "F#4" or clear it via display = false
 comptoolsFretboard.prototype.updateExclusiveNote = function (note, display) {
 
-        this.svg_fretboard.selectAll(".fretboard-marker-selected")
-                .classed("fretboard-marker-selected", false);
+    this.svg_fretboard.selectAll(".fretboard-marker-selected")
+            .classed("fretboard-marker-selected", false);
 
-        if (typeof display === 'undefined')
-        {
-            display = true;
-        }
+    if (typeof display === "undefined")
+    {
+        display = true;
+    }
 
-        this.svg_fretboard.selectAll(".note-" + note.replace("#", "s").
-                toLowerCase()).classed("fretboard-marker-selected", display);
+    this.svg_fretboard.selectAll(".note-" + note.replace("#", "s").
+            toLowerCase()).classed("fretboard-marker-selected", display);
 
-    };
-    
+};
+
 comptoolsKeyboard.prototype.updateExclusiveNote = function (note, display) {
 
-        this.svg_keyboard.selectAll(".keyboard-marker-selected")
-                .classed("keyboard-marker-selected", false);
+    this.svg_keyboard.selectAll(".keyboard-marker-selected")
+            .classed("keyboard-marker-selected", false);
 
-        if (typeof display === 'undefined')
-        {
-            display = true;
-        }
+    if (typeof display === "undefined")
+    {
+        display = true;
+    }
 
-        this.svg_keyboard.selectAll(".note-" + note.replace("#", "s").
-                toLowerCase()).classed("keyboard-marker-selected", display);
+    this.svg_keyboard.selectAll(".note-" + note.replace("#", "s").
+            toLowerCase()).classed("keyboard-marker-selected", display);
 
-    };
+};
 
 
 function AltoSaxChart() {
@@ -228,7 +395,7 @@ function AltoSaxChart() {
     this.draw_fingerings = function (notes) {
 
         // Check whether notes is array and convert to array if not.
-        if (notes.constructor !== Array){
+        if (notes.constructor !== Array) {
             notes = [notes];
         }
 
@@ -256,18 +423,18 @@ function AltoSaxChart() {
 // **********************************
 
 // The object
-function comptoolsNotePlayerElement(root, chord, dur, leg)
+function comptoolsSfNotePlayerElement(note, dur, leg)
 {
 
     // Check argument list
     var my_dur = '1/2';
-    if (dur !== undefined)
+    if (typeof dur !== "undefined")
     {
         my_dur = dur;
     }
-    
+
     var my_leg = false;
-    if (leg !== undefined){
+    if (typeof leg !== "undefined") {
         my_leg = leg;
     }
 
@@ -275,139 +442,116 @@ function comptoolsNotePlayerElement(root, chord, dur, leg)
     var self = this;
 
     // Check root and chord, use default (C maj) if unsupported
-    var my_root = 'C';
-    root = flats2sharps(root).toUpperCase().replace("H", "B"); // Make sure root is correct
-    if (note_array.indexOf(root) !== -1){
-        my_root = root;
-    }else{
+    var my_note = 'A#1';
+    note = flats2sharps(note).toUpperCase().replace("H", "B"); // Make sure note is correct
+    if (get_semitone_distance(note) < 11 || get_semitone_distance(note) > 43) {
+        my_note = note;
+    } else {
         console.log('Wrong note detected. Using default value.');
     }
-    
-    var my_chord = 'maj';
-    chord = chord.toLowerCase();
-    if (chord_structures.hasOwnProperty(chord)){
-        my_chord = chord;
-    }else{
-        console.log('Wrong chord detected. Using default value.');
-    }
 
-    this.my_root = my_root;
-    this.my_chord = my_chord;
+    this.my_note = my_note;
 
     // Timeline correspondence
     this.timeline_id = null;
 
     // Indices for duration and octave: defaults to length of 1/2 and 3rd octave
-    this.duration_index = CHORD_LENGTHS.indexOf(my_dur);
-    if (this.duration_index === -1){
+    this.duration_index = SF_NOTE_LENGTHS.indexOf(my_dur);
+    if (this.duration_index === -1) {
         my_dur = '1/2';
-        this.duration_index = CHORD_LENGTHS.indexOf('1/2');
+        this.duration_index = SF_NOTE_LENGTHS.indexOf('1/2');
         console.log('Wrong duration detected. Using default value.');
-    }
-    
-    this.octave_index = CHORD_OCTAVES.indexOf(my_oct);
-    if (this.octave_index === -1){
-        my_oct = 3;
-        this.octave_index = CHORD_OCTAVES.indexOf(3);
-        console.log('Wrong octave detected. Using default value.');
     }
 
     // Also methods to get actual values
     this.get_dur = function () {
-        return CHORD_LENGTHS[this.duration_index];
-    };
-
-    this.get_oct = function () {
-        return CHORD_OCTAVES[this.octave_index];
+        return SF_NOTE_LENGTHS[this.duration_index];
     };
 
     // Play this chord
     this.play = function () {
-        play_chord(this.my_root, this.my_chord, this.get_oct(),
-                get_duration_in_seconds(this.get_dur()));
+        play_sf_note(this.my_note, get_duration_in_seconds(this.get_dur()));
     }
 
     // Whether to use legato with several same chords
     this.legato = my_leg;
 
-    this.elem_id = 'chord-list-item-' + chord_list_counter++;
+    this.elem_id = 'sf-note-list-item-' + sf_note_list_counter++;
 
     // Replace the values
-    var my_chord_elem = CHORD_LIST_ITEM_TEMPLATE.replace('{{chord-text}}', root + " " + chord);
-    my_chord_elem = my_chord_elem.replace('{{chord-length}}', my_dur);
-    my_chord_elem = my_chord_elem.replace('{{chord-octave}}', my_oct);
+    var my_sf_note_elem = SF_NOTE_LIST_ITEM_TEMPLATE.replace('{{sf-note-text}}', note);
+    my_sf_note_elem = my_sf_note_elem.replace('{{sf-note-length}}', my_dur);
 
     // Add to DOM
-    var chord_list_elem = d3.select("#" + CHORD_LIST_ID);
-    this.list_elem = chord_list_elem.append('li')
-            .attr('class', CHORD_LIST_ITEM_CLASS)
+    var sf_note_list_elem = d3.select("#" + SF_NOTE_LIST_ID);
+    this.list_elem = sf_note_list_elem.append('li')
+            .attr('class', SF_NOTE_LIST_ITEM_CLASS)
             .attr('id', this.elem_id)
-            .html(my_chord_elem);
+            .html(my_sf_note_elem);
 
     // Set up legato
-    d3.select("#" + this.elem_id + ' .chord-legato')
+    d3.select("#" + this.elem_id + ' .sf-note-legato')
             .classed('selected', this.legato);
 
     // Assign actions
 
     // Legato
-    d3.select("#" + this.elem_id + ' .chord-legato')
+    d3.select("#" + this.elem_id + ' .sf-note-legato')
             .on('click', function () {
                 self.legato = !self.legato;
                 d3.select(this).classed('selected', self.legato);
-                if (comptools_config.chord_player !== undefined) {
-                    comptools_config.chord_player.update_callback();
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
                 }
             }
             );
 
-    // Chord selection
-    d3.select("#" + this.elem_id + ' .chord-header .chord-text')
+    // Note selection
+    d3.select("#" + this.elem_id + ' .sf-note-header .sf-note-text')
             .on('click', this.clickHandler());
 
-    // Length and octave controls
-    d3.select('#' + this.elem_id + ' .chord-length .chord-reduce-value')
+    // Duration controls
+    d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-reduce-value')
             .on('click', function () {
                 self.updateDuration(-1);
-                if (comptools_config.chord_player !== undefined) {
-                    comptools_config.chord_player.update_callback();
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
                 }
             });
 
-    d3.select('#' + this.elem_id + ' .chord-length .chord-add-value')
+    d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-add-value')
             .on('click', function () {
                 self.updateDuration(1);
-                if (comptools_config.chord_player !== undefined) {
-                    comptools_config.chord_player.update_callback();
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
                 }
             });
 
 
     // Delete and duplicate
-    d3.select('#' + this.elem_id + ' .chord-actions .chord-delete')
+    d3.select('#' + this.elem_id + ' .sf-note-actions .sf-note-delete')
             .on('click', function () {
                 self.delete();
-                if (comptools_config.chord_player !== undefined) {
-                    comptools_config.chord_player.update_callback();
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
                 }
             });
 
-    d3.select('#' + this.elem_id + ' .chord-actions .chord-duplicate')
+    d3.select('#' + this.elem_id + ' .sf-note-actions .sf-note-duplicate')
             .on('click', function () {
                 // Get duration and octave by indices
-                var dup_dur = CHORD_LENGTHS[self.duration_index];
-                var dup_oct = CHORD_OCTAVES[self.octave_index];
-                var my_chord = new comptoolsChordPlayerElement(self.my_root,
-                        self.my_chord, dup_dur, dup_oct);
-                chord_list.push(my_chord);
-                if (comptools_config.instrument_glue !== undefined) {
-                    my_chord.selection_callback =
+                var dup_dur = SF_NOTE_LENGTHS[self.duration_index];
+                var my_note = new comptoolsSfNotePlayerElement(self.my_note,
+                        dup_dur);
+                sf_note_list.push(my_note);
+                if (typeof comptools_config.instrument_glue !== "undefined") {
+                    my_note.selection_callback =
                             comptools_config
                             .instrument_glue
-                            .funHighlightChordListElementNotes;
+                            .funHighlightSfNoteListElementNotes;
                 }
-                if (comptools_config.chord_player !== undefined) {
-                    comptools_config.chord_player.update_callback();
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
                 }
             });
 
@@ -418,11 +562,11 @@ function comptoolsNotePlayerElement(root, chord, dur, leg)
         this.duration_index += dir;
 
         this.duration_index =
-                saturate_value(this.duration_index, 0, CHORD_LENGTHS.length - 1);
+                saturate_value(this.duration_index, 0, SF_NOTE_LENGTHS.length - 1);
 
         // Set the appropriate value in the text box
-        var my_dur = CHORD_LENGTHS[this.duration_index];
-        d3.select('#' + this.elem_id + ' .chord-length .chord-text-input')
+        var my_dur = SF_NOTE_LENGTHS[this.duration_index];
+        d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', my_dur);
 
     };
@@ -431,16 +575,16 @@ function comptoolsNotePlayerElement(root, chord, dur, leg)
     this.delete = function ()
     {
         // Check if this object is the selected one in player and remove it
-        if (comptools_config.chord_player !== undefined &&
-                this === comptools_config.chord_player.current_chord) {
-            comptools_config.chord_player.current_chord = null;
+        if (typeof comptools_config.sf_note_player !== "undefined" &&
+                this === comptools_config.sf_note_player.current_note) {
+            comptools_config.sf_note_player.current_note = null;
         }
 
         this.list_elem.remove();
-        chord_list.remove_obj_by_prop('elem_id', this.elem_id);
+        sf_note_list.remove_obj_by_prop('elem_id', this.elem_id);
 
-        if (comptools_config.chord_player !== undefined) {
-            comptools_config.chord_player.update_callback();
+        if (typeof comptools_config.sf_note_player !== "undefined") {
+            comptools_config.sf_note_player.update_callback();
         }
 
         return true;
@@ -448,11 +592,322 @@ function comptoolsNotePlayerElement(root, chord, dur, leg)
 
 }
 
+// Note selection callback
+comptoolsSfNotePlayerElement.prototype.clickHandler = function ()
+{
+    var self = this;
+    return function (d, i) {
+
+        // TODO: This solution is quite poor in general since how do we know 
+        // which is the parent element and whether it is the correct one?
+        var the_elem = this.parentElement.parentElement;
+        var action = !d3.select(the_elem).classed("sf-note-selected");
+
+        // Remove all other selections
+        d3.selectAll('.' + SF_NOTE_LIST_ITEM_CLASS
+                + ' .uk-card').classed('sf-note-selected', false);
+
+        // Assign selection
+        d3.select(the_elem).classed("sf-note-selected", action);
+
+        // Update the player with currently selected chord information
+        if (typeof comptools_config.sf_note_player !== "undefined") {
+            if (action) {
+                comptools_config.sf_note_player.current_note = self;
+            } else {
+                comptools_config.sf_note_player.current_note = null;
+            }
+        }
+
+        // Check if the note list exists and envoke the selection_callback
+        if (typeof sf_note_list !== "undefined") {
+            // Pass the object reference to selection callback
+            var my_elem_id = d3.select(the_elem.parentElement).attr('id');
+            var my_obj = sf_note_list[
+                    sf_note_list.find_obj_by_prop('elem_id', my_elem_id)];
+            my_obj.selection_callback(my_obj, action);
+        } else {
+            console.log('Note list (sf_note_list) is not found in scope.');
+        }
+    };
+};
+
+comptoolsSfNotePlayerElement.prototype.selection_callback = function (my_obj)
+{
+    return null;
+}
+
+function comptoolsSfNotePlayer(player_class)
+{
+
+    var self = this;
+
+    this.playing = false;           // Player state
+    this.current_event_index = 0;   // Event index for the scheduler
+    this.current_note = null;      // Currently selected chord element
+
+    // Get tempo from config file if there is one
+    var my_tempo = 120; // Defaults to 120 bpm
+    if (typeof comptools_config.tempo !== "undefined") {
+        my_tempo = comptools_config.tempo;
+    }
+
+    // Add the basic controls first
+    d3.select(player_class).html(
+            d3.select(player_class).html()
+            + SF_NOTE_LIST_CONTROL_TEMPLATE.replace("{{sf-note-bpm}}", my_tempo));
+
+    // Finally, add the container
+    d3.select(player_class).html(
+            d3.select(player_class).html() + SF_NOTE_LIST_TEMPLATE);
+
+    // Assign controls
+    d3.select(player_class + ' .sf-note-play').on('click', function () {
+        self.togglePlay();
+    });
+
+    // Pressing the space bar has the same effect
+    // Bind a keyboard event as well
+    Mousetrap.bind("space", function (e) {
+        self.togglePlay();
+    });
+
+    // Prevent default behavior of space bar as well
+    window.onkeydown = function (e) {
+        if (e.keyCode === 32 && e.target === document.body) {
+            e.preventDefault();
+        }
+    };
+
+    // Event: begin play
+    this.togglePlay = function () {
+
+        // Toggle play state
+        this.playing = !this.playing;
+        d3.select(player_class + ' .sf-note-play')
+                .classed('selected', this.playing);
+        ;
+
+        // Check if playing is stopped
+        if (!this.playing) {
+            // Stop transport and cancel all events
+            Tone.Transport.stop();
+
+            // Stop MIDI, if present
+            if (typeof comptools_midi_player !== "undefined" &&
+                    comptools_midi_player.ready) {
+                comptools_midi_player.flushNoteBuffer();
+            }
+
+            return true;
+        }
+
+        // Parse tempo and update it in the config file if needed
+        var now_tempo = d3.select(player_class + ' .sf-note-bpm')
+                .property('value');
+
+        // Convert to integer and store value in the configuration object
+        if (typeof comptools_config.tempo !== "undefined") {
+            comptools_config.tempo = parseInt(now_tempo);
+        }
+
+        // Return early if there is nothing to play
+        if (typeof sf_note_list === "undefined" || sf_note_list.length == 0) {
+            // Disable play button
+            d3.select(player_class + ' .sf-note-play').classed('selected', false);
+            return null;
+        }
+
+        // Get the events and store them in a global variable
+        var myev = parse_chord_player();
+        sf_note_play_events = myev.events;
+
+        // If no chord is selected, start from the first one
+        var start_sf_note = 0;
+        if (myev.selected_sf_note !== -1) {
+            start_sf_note = myev.selected_sf_note;
+        }
+
+        // Clear all previous events
+        Tone.Transport.cancel(0);
+
+        // Setup transport
+        Tone.Transport.position = myev.start_position;
+        Tone.Transport.loopStart = 0;
+        Tone.Transport.loopEnd = myev.total_duration;
+        Tone.Transport.loop = true;
+
+        // Schedule all play events
+        var my_position = 0;
+        for (var k = 0; k < sf_note_play_events.length; k++) {
+            Tone.Transport.schedule(function (time) {
+                self.process_events();
+            }, my_position);
+            my_position += sf_note_play_events[k].interval;
+        }
+
+        // Start processing the events
+        this.current_event_index = start_sf_note;
+
+        // Start transport
+        Tone.Transport.start();
+
+    };
+
+    this.process_events = function () {
+
+        var current_event = sf_note_play_events[self.current_event_index++];
+
+        // Repeat
+        if (self.current_event_index >= sf_note_play_events.length) {
+            self.current_event_index = 0;
+        }
+
+        // Deselect all chords
+        d3.selectAll('.' + SF_NOTE_LIST_ITEM_CLASS + ' div.uk-card')
+                .classed('sf-note-selected', false);
+
+        // Select this chord
+        d3.select('#' + current_event.highlight_id + " div.uk-card")
+                .classed('sf-note-selected', true);
+
+        // Update the player with currently selected chord information
+        if (typeof comptools_config.sf_note_player !== "undefined") {
+            this.current_note = current_event.object;
+        } else {
+            this.current_note = null;
+        }
+
+        // Update timeline
+        self.update_timeline_selection(current_event.object, true);
+
+        // Start playing the chord, if not legato
+        if (!current_event.legato) {
+            // Play the notes
+            player_play_sf_note(current_event.sf_note, current_event.duration);
+
+            // Also highlight the notes
+            if (typeof comptools_config.instrument_glue !== "undefined") {
+                var my_glue = comptools_config.instrument_glue;
+                for (var k = 0; k < my_glue.objArray.length; k++) {
+                    my_glue.objArray[k]
+                            .updateNotes(current_event.highlight_notes);
+                }
+            }
+
+        }
+    };
+
+    // Export chords
+    this.export_notes = function () {
+
+        // Get the current order
+        var play_order_ids = [];
+        d3.selectAll('#' + CHORD_LIST_ID + ' .' + CHORD_LIST_ITEM_CLASS).
+                each(function () {
+                    play_order_ids.push(d3.select(this).attr('id'));
+                });
+
+        var text = "";
+        var k;
+        for (k = 0; k < play_order_ids.length; k++) {
+            var tc = chord_list.get_obj_by_prop('elem_id', play_order_ids[k]);
+            text += tc.my_root + " " + tc.my_chord + " "
+                    + tc.get_dur() + " " + tc.get_oct()
+                    + (tc.legato ? " leg" : "") + "; ";
+        }
+
+        // Beautification
+        text = text.trim();
+        if (text.slice(-1) === ";") {
+            text = text.substr(0, text.length - 1);
+        }
+
+        // Add the comment with some additional information
+        var add_com = "";
+        if (typeof comptools_config.theory !== "undefined" &&
+                comptools_config.theory.root !== "null") {
+            add_com = "{*Scale: " + comptools_config.theory.root + " " +
+                    comptools_config.theory.scale + "*} ";
+        }
+
+        return add_com + text;
+    };
+
+    // Import chords
+    this.import_notes = function (text) {
+
+        // Clear the current chords
+        this.clear();
+
+        // Remove the comments
+        text = text.replace(/{\*.*\*}/, "");
+
+        // Parse text
+        var the_chords = text.split(";");
+        var k;
+
+        for (k = 0; k < the_chords.length; k++) {
+
+            // Preprocess the chord text
+            var this_chord = the_chords[k].replace(/\s+/g, ' ').trim();
+
+            // Break the chord into pieces. Currently length determines
+            // the contents, although this is not a very good approach
+            // (a parser would have been better). But for simplicity, we
+            // just use this method.
+            var chord_elem = this_chord.split(" ");
+
+            // Parse depending on the length
+            if (chord_elem.length === 4 || chord_elem.length === 5) {
+
+                // Root, chord, duration, octave
+                var my_root = chord_elem[0];
+                var my_chord = chord_elem[1];
+                var my_dur = chord_elem[2];
+                var my_oct = parseInt(chord_elem[3]);
+
+                // Determine whether this is a legato
+                var my_leg = false;
+                if (chord_elem.length === 5 && chord_elem[4] === 'leg') {
+                    my_leg = true;
+                }
+
+                // Add the chord to timeline
+                var my_chord = new comptoolsChordPlayerElement(my_root,
+                        my_chord, my_dur, my_oct, my_leg);
+                chord_list.push(my_chord);
+
+                // Because the relationship is many to one, we'll have to use
+                // a config variable here---reference to instrument glue.
+                // Therefore, it must be assigned beforehand.
+                if (typeof comptools_config.instrument_glue !== "undefined") {
+                    my_chord.selection_callback =
+                            comptools_config
+                            .instrument_glue
+                            .funHighlightChordListElementNotes;
+                }
+
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.chord_player.update_callback();
+                }
+
+            } else
+            {
+                // Do nothing
+            }
+
+        }
+
+    };
+}
+
+
 // Create the sax glue object
 function InstrumentGlueSax() {
     // ... and push single note update functions here
     this.objArray = new Array();
-    
+
     this.fingering_chart = null;
 
     var self = this;
@@ -465,9 +920,11 @@ function InstrumentGlueSax() {
             // Call all functions in array with the update information
             self.objArray[k].updateExclusiveNote(note, action);
         }
-        
+
         // TODO: In the future, this will add the note to the timeline
-        self.fingering_chart.draw_fingerings(note);
+
+        // Automatically transpose (atm)
+        self.fingering_chart.draw_fingerings(transpose_note(note, +9));
     };
 }
 ;

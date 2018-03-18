@@ -466,6 +466,9 @@ div.fretboard-bass {
 .sax-chart {
   text-align: center; }
 
+.sf-sax-key.sf-sax-out-of-range {
+  fill: #777; }
+
 .sf-sax-left.sf-sax-active {
   fill: #ea3c85; }
 
