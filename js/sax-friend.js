@@ -97,11 +97,14 @@ var SF_ALTO_SAX_C_PREV = '.sax-chart-prev';
 var SF_ALTO_SAX_C_NOW = '.sax-chart-now';
 var SF_ALTO_SAX_C_NEXT = '.sax-chart-next';
 
+var SF_ALTO_NOTE_LOW = 47;
+var SF_ALTO_NOTE_HIGH = 79;
+
 // Chord list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
-var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">{{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
-var SF_NOTE_LENGTHS = ["1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "2/3", "1"];
+var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
+var SF_NOTE_LENGTHS = ["1/16", "1/12", "1/8", "1/6", "1/4", "2/3", "1/2", "1"];
 var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
 var SF_NOTE_LIST_ID = "sf-note-list";
 var SF_NOTE_LIST_ITEM_CLASS = "sf-note-list-element";
@@ -202,8 +205,6 @@ function draw_alto_fingering(note, cc) {
         // Not in range or note not found
         d3.selectAll(cc + " .sf-sax-key").classed("sf-sax-out-of-range", true);
     }
-
-
 }
 
 
@@ -225,7 +226,8 @@ function add_sf_note_to_player(note) {
         comptools_config.sf_note_player.update_callback();
     }
 
-    play_sf_note(note, 0.5);
+    // Correct pitch for playback
+    play_sf_note(transpose_note(note,-9), 0.5);
 }
 
 // Audio context sound player
@@ -453,10 +455,10 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     // Check root and chord, use default (C maj) if unsupported
     var my_note = 'A#4';
     note = flats2sharps(note).toUpperCase().replace("H", "B"); // Make sure note is correct
-    if (get_semitone_distance(note) < 11 || get_semitone_distance(note) > 43) {
-        my_note = note;
-    } else {
+    if (get_semitone_distance(note) < SF_ALTO_NOTE_LOW || get_semitone_distance(note) > SF_ALTO_NOTE_HIGH) {
         console.log('Wrong note detected. Using default value.');
+    } else {
+        my_note = note;
     }
 
     this.my_note = my_note;
@@ -573,17 +575,33 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
 
         // Only run if VF present
         if (VF !== null) {
+            
+            var match = note_scinot.exec(self.my_note);
+            var new_note = match[1] + "/" + match[2];
+            
+            var my_dur = "";
+            if (self.get_dur().length > 1)
+            {
+                my_dur = self.get_dur().split("/")[1];
+            }
+            else
+            {
+                my_dur = self.get_dur();
+            }
+            
             // Create an SVG renderer and attach it to the DIV element named "boo".
             var div = document.getElementById(self.elem_id+"-canvas");
+            div.innerHTML = "";
+            
             var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
             // Configure the rendering context.
-            renderer.resize(200, 200);
+            renderer.resize(200, 140);
             var context = renderer.getContext();
             context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
 
             // Create a stave of width 400 at position 10, 40 on the canvas.
-            var stave = new VF.Stave(10, 40, 80);
+            var stave = new VF.Stave(60, 10, 80);
 
             // Add a clef and time signature.
             stave.addClef("treble");
@@ -594,7 +612,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
             // Create the notes
             var notes = [
                 // A quarter-note C.
-                new VF.StaveNote({keys: ["C#/6"], duration: "q", auto_stem: true})
+                new VF.StaveNote({keys: [new_note], duration: my_dur, auto_stem: true})
             ];
 
             // Create a voice in 4/4 and add above notes
@@ -623,6 +641,8 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         var my_dur = SF_NOTE_LENGTHS[this.duration_index];
         d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', my_dur);
+        
+        self.updateNotation();
 
     };
 
@@ -644,6 +664,9 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
 
         return true;
     };
+
+    // Finally, update the notation
+    this.updateNotation();
 
 }
 
@@ -978,7 +1001,21 @@ function InstrumentGlueSax() {
 
         // TODO: In the future, this will add the note to the timeline
 
-        // Automatically transpose (atm)
+        // Automatically transpose (ATM)
+        
+        // Add only if within range
+        var myadd = transpose_note(note,9);
+        if (get_semitone_distance(myadd) < SF_ALTO_NOTE_LOW ||
+                    get_semitone_distance(myadd) > SF_ALTO_NOTE_HIGH)
+            {
+                // Do nothing
+            }
+            else
+            {
+                add_sf_note_to_player(transpose_note(note, +9),'1/2');
+            }
+        
+        // Show fingering in any case
         self.fingering_chart.draw_fingerings(transpose_note(note, +9));
     };
 }
