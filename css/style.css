@@ -507,6 +507,10 @@ div.fretboard-bass {
   .sf-note-header .chord-text {
     cursor: pointer; }
 
+.sf-note-list-element .sf-note-canvas {
+  width: 100%;
+  height: 200px; }
+
 .sf-note-option {
   width: 100%;
   font-size: 0.8em;

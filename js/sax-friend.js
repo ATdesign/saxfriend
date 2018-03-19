@@ -1,3 +1,12 @@
+// Set up Vexflow
+if (typeof Vex.Flow !== "undefined") {
+    VF = Vex.Flow;
+} else
+{
+    VF = null;
+}
+
+
 // SVG fingering chart
 var SF_ALTO_SAX_CHART_K = 2.0784;
 var SF_ALTO_SAX_CHART_W = 250; // Default width. To get height, use H=K*W
@@ -91,7 +100,7 @@ var SF_ALTO_SAX_C_NEXT = '.sax-chart-next';
 // Chord list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
-var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">{{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Duration:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
+var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">{{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
 var SF_NOTE_LENGTHS = ["1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "1/2", "1"];
 var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
 var SF_NOTE_LIST_ID = "sf-note-list";
@@ -442,7 +451,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     var self = this;
 
     // Check root and chord, use default (C maj) if unsupported
-    var my_note = 'A#1';
+    var my_note = 'A#4';
     note = flats2sharps(note).toUpperCase().replace("H", "B"); // Make sure note is correct
     if (get_semitone_distance(note) < 11 || get_semitone_distance(note) > 43) {
         my_note = note;
@@ -471,7 +480,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     // Play this chord
     this.play = function () {
         play_sf_note(this.my_note, get_duration_in_seconds(this.get_dur()));
-    }
+    };
 
     // Whether to use legato with several same chords
     this.legato = my_leg;
@@ -488,6 +497,10 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
             .attr('class', SF_NOTE_LIST_ITEM_CLASS)
             .attr('id', this.elem_id)
             .html(my_sf_note_elem);
+
+    // Add also ID to canvas
+    d3.select("#" + this.elem_id + " .sf-note-canvas")
+            .attr('id', this.elem_id + "-canvas");
 
     // Set up legato
     d3.select("#" + this.elem_id + ' .sf-note-legato')
@@ -554,6 +567,48 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
                     comptools_config.sf_note_player.update_callback();
                 }
             });
+
+    // Vexflow notation. Vexflow must be available!
+    this.updateNotation = function () {
+
+        // Only run if VF present
+        if (VF !== null) {
+            // Create an SVG renderer and attach it to the DIV element named "boo".
+            var div = document.getElementById(self.elem_id+"-canvas");
+            var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+
+            // Configure the rendering context.
+            renderer.resize(200, 200);
+            var context = renderer.getContext();
+            context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
+
+            // Create a stave of width 400 at position 10, 40 on the canvas.
+            var stave = new VF.Stave(10, 40, 80);
+
+            // Add a clef and time signature.
+            stave.addClef("treble");
+
+            // Connect it to the rendering context and draw!
+            stave.setContext(context).draw();
+
+            // Create the notes
+            var notes = [
+                // A quarter-note C.
+                new VF.StaveNote({keys: ["C#/6"], duration: "q", auto_stem: true})
+            ];
+
+            // Create a voice in 4/4 and add above notes
+            var voice = new VF.Voice({num_beats: 4, beat_value: 4}).setMode(2);
+            voice.addTickables(notes);
+
+            // Format and justify the notes to 400 pixels.
+            var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 80);
+
+            // Render voice
+            voice.draw(context, stave);
+        }
+
+    };
 
     // Update duration
     this.updateDuration = function (dir)
