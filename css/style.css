@@ -454,7 +454,8 @@ div.fretboard-bass {
   width: 150px;
   display: inline-block;
   margin-left: 25px;
-  margin-right: 25px; }
+  margin-right: 25px;
+  opacity: 0.5; }
 
 .sax-chart-now {
   width: 200px;

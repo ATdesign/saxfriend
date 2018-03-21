@@ -968,12 +968,23 @@ function comptoolsSfNotePlayer(player_class)
         }
     };
 
+    // Clear all chords
+    this.clear = function () {
+        if (sf_note_list !== undefined) {
+            while (sf_note_list.length > 0) {
+                sf_note_list[0].delete();
+            }
+        }
+    };
+
     // Export chords
     this.export_notes = function () {
 
+        // TODO: Add transpose on export option
+
         // Get the current order
         var play_order_ids = [];
-        d3.selectAll('#' + CHORD_LIST_ID + ' .' + CHORD_LIST_ITEM_CLASS).
+        d3.selectAll('#' + SF_NOTE_LIST_ID + ' .' + SF_NOTE_LIST_ITEM_CLASS).
                 each(function () {
                     play_order_ids.push(d3.select(this).attr('id'));
                 });
@@ -981,9 +992,8 @@ function comptoolsSfNotePlayer(player_class)
         var text = "";
         var k;
         for (k = 0; k < play_order_ids.length; k++) {
-            var tc = chord_list.get_obj_by_prop('elem_id', play_order_ids[k]);
-            text += tc.my_root + " " + tc.my_chord + " "
-                    + tc.get_dur() + " " + tc.get_oct()
+            var tc = sf_note_list.get_obj_by_prop('elem_id', play_order_ids[k]);
+            text += tc.my_note + " " + tc.get_dur() + " "
                     + (tc.legato ? " leg" : "") + "; ";
         }
 
@@ -996,7 +1006,7 @@ function comptoolsSfNotePlayer(player_class)
         // Add the comment with some additional information
         var add_com = "";
         if (typeof comptools_config.theory !== "undefined" &&
-                comptools_config.theory.root !== "null") {
+                comptools_config.theory.root !== "none") {
             add_com = "{*Scale: " + comptools_config.theory.root + " " +
                     comptools_config.theory.scale + "*} ";
         }
@@ -1007,60 +1017,46 @@ function comptoolsSfNotePlayer(player_class)
     // Import chords
     this.import_notes = function (text) {
 
-        // Clear the current chords
+        // TODO: Add transpose on import option
+
+        // Clear the current notes
         this.clear();
 
         // Remove the comments
         text = text.replace(/{\*.*\*}/, "");
 
         // Parse text
-        var the_chords = text.split(";");
+        var the_notes = text.split(";");
         var k;
 
-        for (k = 0; k < the_chords.length; k++) {
+        for (k = 0; k < the_notes.length; k++) {
 
             // Preprocess the chord text
-            var this_chord = the_chords[k].replace(/\s+/g, ' ').trim();
+            var this_note = the_notes[k].replace(/\s+/g, ' ').trim();
 
-            // Break the chord into pieces. Currently length determines
+            // Break the note into pieces. Currently length determines
             // the contents, although this is not a very good approach
             // (a parser would have been better). But for simplicity, we
             // just use this method.
-            var chord_elem = this_chord.split(" ");
+            var note_elem = this_note.split(" ");
 
             // Parse depending on the length
-            if (chord_elem.length === 4 || chord_elem.length === 5) {
+            if (note_elem.length === 2 || note_elem.length === 3) {
 
-                // Root, chord, duration, octave
-                var my_root = chord_elem[0];
-                var my_chord = chord_elem[1];
-                var my_dur = chord_elem[2];
-                var my_oct = parseInt(chord_elem[3]);
+                // Note and duration
+                var my_note = note_elem[0];
+                var my_dur = note_elem[1];
 
                 // Determine whether this is a legato
                 var my_leg = false;
-                if (chord_elem.length === 5 && chord_elem[4] === 'leg') {
+                if (note_elem.length === 3 && note_elem[2] === 'leg') {
                     my_leg = true;
                 }
 
-                // Add the chord to timeline
-                var my_chord = new comptoolsChordPlayerElement(my_root,
-                        my_chord, my_dur, my_oct, my_leg);
-                chord_list.push(my_chord);
-
-                // Because the relationship is many to one, we'll have to use
-                // a config variable here---reference to instrument glue.
-                // Therefore, it must be assigned beforehand.
-                if (typeof comptools_config.instrument_glue !== "undefined") {
-                    my_chord.selection_callback =
-                            comptools_config
-                            .instrument_glue
-                            .funHighlightChordListElementNotes;
-                }
-
-                if (typeof comptools_config.sf_note_player !== "undefined") {
-                    comptools_config.chord_player.update_callback();
-                }
+                // Add the note to timeline
+                var add_note = new comptoolsSfNotePlayerElement(my_note,
+                        my_dur, my_leg);
+                sf_note_list.push(add_note);
 
             } else
             {
@@ -1070,6 +1066,7 @@ function comptoolsSfNotePlayer(player_class)
         }
 
     };
+
 }
 
 
