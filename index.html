@@ -23,10 +23,10 @@
 
         <!-- D3.js  -->
         <script src="js/d3.min.js"></script>
-		
-	<!-- Vexflow notation -->
+
+        <!-- Vexflow notation -->
         <script src="js/vexflow-min.js"></script>
-        
+
         <!-- Mousetrap for key bindings -->
         <script src="js/mousetrap.min.js"></script>
 
@@ -43,8 +43,8 @@
         <!-- Create div containers -->
         <div class="all-container">
             <h2 style="font-family: 'Fira Sans'">Saxophone Player's Friend</h2>
-            <ul uk-accordion="multiple: true; collapsible: false">
-                <li class="uk-open">
+            <ul data-uk-accordion="showfirst: false; multiple: true">
+                <li>
                     <h3 class="uk-accordion-title"> Circle of Fifths</h3>
                     <div class="uk-accordion-content">
                         <div class="theory" id="theory-container"></div>
@@ -56,7 +56,7 @@
                         <div class="keyboard"></div>
                     </div>
                 </li>
-                <li class="uk-open">
+                <li>
                     <h3 class="uk-accordion-title">Guitar Entry</h3>
                     <div class="uk-accordion-content">
                         <div class="fretboard fb-guitar"></div>
@@ -71,7 +71,7 @@
                         </div>
                     </div>
                 </li>
-				<li class="uk-open">
+                <li class="uk-open">
                     <h3 class="uk-accordion-title">Saxophone Fingering Chart</h3>
                     <div class="uk-accordion-content">
                         <div class="sax-chart">
@@ -91,7 +91,7 @@
                                     <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
                                         <label><input class="uk-checkbox option-use-sound" type="checkbox" checked> Play sound</label>
                                     </div>
-                                    
+
                                     <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
                                         <label><input class="uk-checkbox option-use-midi" type="checkbox"> Use MIDI output</label>
                                     </div>
@@ -118,7 +118,7 @@
 
         <!-- THE test script -->
         <script src="js/composer-tools.min.js"></script>
-		<script src="js/sax-friend.js"></script>
+        <script src="js/sax-friend.js"></script>
 
         <!-- Create a couple of fretboards ... -->
         <script type="text/javascript">
@@ -137,7 +137,7 @@
             fb_guitar.selection_callback = the_glue.funCallback;
 
             /*the_glue.theory = my_theory;
-            my_theory.selection_callback = the_glue.funHighlightNotes;*/
+             my_theory.selection_callback = the_glue.funHighlightNotes;*/
 
 
             // For the chord player, we must set the instrument glue config
@@ -154,45 +154,45 @@
             //$('#chord-list').on('change', function () {
             //    my_chplayer.update_callback();
             //});
-            
+
             // Options
             my_options = new comptoolsOptions();
-            
+
             // Additional options for tuning
-            $('.guitar-update-tuning .change').on('click', function(){
-               var tuning = prompt("New tuning", fb_guitar.tuning);
-               if (tuning !== null){
-                   fb_guitar.updateTuning(tuning);
-               }
+            $('.guitar-update-tuning .change').on('click', function () {
+                var tuning = prompt("New tuning", fb_guitar.tuning);
+                if (tuning !== null) {
+                    fb_guitar.updateTuning(tuning);
+                }
             });
-            
+
             // Predefined: standard
-            $('.guitar-update-tuning .standard').on('click', function(){
+            $('.guitar-update-tuning .standard').on('click', function () {
                 fb_guitar.updateTuning("E4B3G3D3A2E2");
             });
-            
+
             // Predefined: drop d
-            $('.guitar-update-tuning .dropd').on('click', function(){
+            $('.guitar-update-tuning .dropd').on('click', function () {
                 fb_guitar.updateTuning("E4B3G3D3A2D2");
             });
-            
+
             /*$('.import-note-list').on('click', function(){
-               var ntext = prompt("Paste chord list text here", "");
-               if (ntext !== null){
-                   my_noteplayer.import_notes(ntext);
-               }
-            });
-            
-            $('.export-note-list').on('click', function(){
-               var ntext = my_noteplayer.export_notes();
-               prompt("Copy and save this text", ntext);
-            });*/
-    
+             var ntext = prompt("Paste chord list text here", "");
+             if (ntext !== null){
+             my_noteplayer.import_notes(ntext);
+             }
+             });
+             
+             $('.export-note-list').on('click', function(){
+             var ntext = my_noteplayer.export_notes();
+             prompt("Copy and save this text", ntext);
+             });*/
+
             // Create the player
             my_noteplayer = new comptoolsSfNotePlayer(".sf-note-player");
-    
+
             // Generate the visualization base for saxophone
-            my_sax = new AltoSaxChart();            
+            my_sax = new AltoSaxChart();
             the_glue.fingering_chart = my_sax;
 
         </script>

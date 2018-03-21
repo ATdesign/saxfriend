@@ -525,6 +525,16 @@ div.fretboard-bass{
     }
 }
 
+.sf-note-play{
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px;
+}
+
+.sf-note-text{
+    cursor: pointer;
+}
+
 .sf-note-legato{
     font-size: 0.8em;
     border: 1px solid #fff;

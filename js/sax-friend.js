@@ -6,7 +6,6 @@ if (typeof Vex.Flow !== "undefined") {
     VF = null;
 }
 
-
 // SVG fingering chart
 var SF_ALTO_SAX_CHART_K = 2.0784;
 var SF_ALTO_SAX_CHART_W = 250; // Default width. To get height, use H=K*W
@@ -104,7 +103,7 @@ var SF_ALTO_NOTE_HIGH = 79;
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
 var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
-var SF_NOTE_LENGTHS = ["1/16", "1/12", "1/8", "1/6", "1/4", "2/3", "1/2", "1"];
+var SF_NOTE_LENGTHS = ["1/32", "1/24", "1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "1/2", "2/3", "1"];
 var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
 var SF_NOTE_LIST_ID = "sf-note-list";
 var SF_NOTE_LIST_ITEM_CLASS = "sf-note-list-element";
@@ -149,6 +148,9 @@ var alto_sax_notes = {
 // Global counter and chord placeholder
 var sf_note_list_counter = 0;
 var sf_note_list = [];
+
+// Play events
+var sf_note_play_events = [];
 
 // Fetch note from semitone distance to B-1
 function from_semitone_distance(dist) {
@@ -227,7 +229,7 @@ function add_sf_note_to_player(note) {
     }
 
     // Correct pitch for playback
-    play_sf_note(transpose_note(note,-9), 0.5);
+    play_sf_note(transpose_note(note, -9), 0.5);
 }
 
 // Audio context sound player
@@ -253,12 +255,12 @@ function player_play_sf_note(note, len) {
     // Play the sound
     if (typeof comptools_sound_player !== "undefined" && comptools_config.play_sound)
     {
-        comptools_sound_player.triggerAttackRelease(notes, len);
+        comptools_sound_player.triggerAttackRelease(note, len);
     }
 
     if (typeof comptools_midi_player !== "undefined" &&
             comptools_midi_player.ready && comptools_config.play_midi) {
-        comptools_midi_player.CyclicSendOnMessage(notes);
+        comptools_midi_player.CyclicSendOnMessage(note);
     }
 }
 ;
@@ -355,9 +357,48 @@ function parse_sf_note_player() {
 
     }
 
+    // This part does a look around each note in the event sequence
+    // To build the "previous-current-next" trio of notes
+    var ev_len = sf_note_play_events.length;
+    for (var q = 0; q < ev_len; q++) {
+
+        var the_note = sf_note_play_events[q].note;
+
+        // Locate the "previous" note
+        var ct = q;
+        var prev_note = the_note; // This is default
+        for (w = 0; w < ev_len; w++) {
+            if (sf_note_play_events[ct].note !== the_note) {
+                prev_note = sf_note_play_events[ct].note;
+                break;
+            }
+            if (--ct < 0) {
+                ct = ev_len - 1;
+            }
+        }
+
+        // Locate the "next" note
+        ct = q;
+        var next_note = the_note; // This is default
+        for (w = 0; w < ev_len; w++) {
+            if (sf_note_play_events[ct].note !== the_note) {
+                next_note = sf_note_play_events[ct].note;
+                break;
+            }
+            if (++ct >= ev_len) {
+                ct = 0;
+            }
+        }
+
+        // Store the notes
+        var the_notes = [prev_note, the_note, next_note];
+        sf_note_play_events[q].lookaround = the_notes;
+
+    }
+
     // Return play events and the selected note
     return {"events": sf_note_play_events,
-        "selected_chord": sf_note_selected,
+        "selected_sf_note": sf_note_selected,
         "start_position": start_position,
         "total_duration": total_dur};
 }
@@ -575,24 +616,53 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
 
         // Only run if VF present
         if (VF !== null) {
-            
+
             var match = note_scinot.exec(self.my_note);
             var new_note = match[1] + "/" + match[2];
-            
+
             var my_dur = "";
-            if (self.get_dur().length > 1)
+            if (self.get_dur() !== "1")
             {
                 my_dur = self.get_dur().split("/")[1];
-            }
-            else
+            } else
             {
                 my_dur = self.get_dur();
             }
-            
+
+            // Check for special duration rendering cases
+            // TODO: Not extremely well done task...should
+            // do via "duration modifiers" with subdivisions
+            var add_txt = "";
+            switch (self.get_dur()) {
+                case "1/24":
+                    my_dur = "16";
+                    add_txt = "3";
+                    break;
+                case "1/12":
+                    my_dur = "8";
+                    add_txt = "3";
+                    break;
+                case "1/6":
+                    my_dur = "4";
+                    add_txt = "3";
+                    break;
+                case "1/3":
+                    my_dur = "2";
+                    add_txt = "3";
+                    break;
+                case "2/3":
+                    my_dur = "1";
+                    add_txt = "3";
+                    break;
+                default:
+                    // Do nothing
+                    break;
+            }
+
             // Create an SVG renderer and attach it to the DIV element named "boo".
-            var div = document.getElementById(self.elem_id+"-canvas");
+            var div = document.getElementById(self.elem_id + "-canvas");
             div.innerHTML = "";
-            
+
             var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
             // Configure the rendering context.
@@ -600,7 +670,6 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
             var context = renderer.getContext();
             context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
 
-            // Create a stave of width 400 at position 10, 40 on the canvas.
             var stave = new VF.Stave(60, 10, 80);
 
             // Add a clef and time signature.
@@ -609,21 +678,48 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
             // Connect it to the rendering context and draw!
             stave.setContext(context).draw();
 
-            // Create the notes
+            // Create the note(s)
             var notes = [
-                // A quarter-note C.
                 new VF.StaveNote({keys: [new_note], duration: my_dur, auto_stem: true})
             ];
 
-            // Create a voice in 4/4 and add above notes
+            // Add "sharp" accidental, if necessary
+            if (new_note.indexOf("#") !== -1) {
+                notes[0].addAccidental(0, new VF.Accidental("#"));
+            }
+
+            // Check which line to draw the text to
+            var draw_line = 9;
+            if (get_semitone_distance(self.my_note) < 59) {
+                draw_line = 2;
+            }
+
+            var text = new VF.TextNote({
+                text: add_txt,
+                font: {
+                    family: "Arial",
+                    size: 12,
+                    weight: "bold"
+                },
+                duration: 'w'
+            })
+                    .setLine(draw_line) // 2 or 9 depending on the note
+                    .setStave(stave)
+                    .setJustification(VF.TextNote.Justification.LEFT);
+
             var voice = new VF.Voice({num_beats: 4, beat_value: 4}).setMode(2);
             voice.addTickables(notes);
 
+            var voice2 = new VF.Voice({num_beats: 4, beat_value: 4}).setMode(2);
+            voice2.addTickables([text]);
+
             // Format and justify the notes to 400 pixels.
-            var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 80);
+            var formatter = new VF.Formatter()
+                    .joinVoices([voice, voice2]).format([voice, voice2], 80);
 
             // Render voice
             voice.draw(context, stave);
+            text.setContext(context).draw();
         }
 
     };
@@ -641,7 +737,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         var my_dur = SF_NOTE_LENGTHS[this.duration_index];
         d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', my_dur);
-        
+
         self.updateNotation();
 
     };
@@ -797,7 +893,7 @@ function comptoolsSfNotePlayer(player_class)
         }
 
         // Get the events and store them in a global variable
-        var myev = parse_chord_player();
+        var myev = parse_sf_note_player();
         sf_note_play_events = myev.events;
 
         // If no chord is selected, start from the first one
@@ -856,21 +952,17 @@ function comptoolsSfNotePlayer(player_class)
             this.current_note = null;
         }
 
-        // Update timeline
-        self.update_timeline_selection(current_event.object, true);
-
-        // Start playing the chord, if not legato
+        // Start playing the note, if not legato
         if (!current_event.legato) {
             // Play the notes
-            player_play_sf_note(current_event.sf_note, current_event.duration);
+            player_play_sf_note(transpose_note(current_event.object.my_note, -9),
+                    current_event.duration);
 
             // Also highlight the notes
             if (typeof comptools_config.instrument_glue !== "undefined") {
                 var my_glue = comptools_config.instrument_glue;
-                for (var k = 0; k < my_glue.objArray.length; k++) {
-                    my_glue.objArray[k]
-                            .updateNotes(current_event.highlight_notes);
-                }
+                my_glue
+                        .funHighlightSfNoteListElementLookaroundNotes(current_event.lookaround);
             }
 
         }
@@ -999,24 +1091,28 @@ function InstrumentGlueSax() {
             self.objArray[k].updateExclusiveNote(note, action);
         }
 
-        // TODO: In the future, this will add the note to the timeline
-
-        // Automatically transpose (ATM)
-        
-        // Add only if within range
-        var myadd = transpose_note(note,9);
+        // Automatically transpose and
+        // add only if within range
+        var myadd = transpose_note(note, 9);
         if (get_semitone_distance(myadd) < SF_ALTO_NOTE_LOW ||
-                    get_semitone_distance(myadd) > SF_ALTO_NOTE_HIGH)
-            {
-                // Do nothing
-            }
-            else
-            {
-                add_sf_note_to_player(transpose_note(note, +9),'1/2');
-            }
-        
+                get_semitone_distance(myadd) > SF_ALTO_NOTE_HIGH)
+        {
+            // Do nothing
+        } else if (action)  // If we deselect note, do nothing
+        {
+            add_sf_note_to_player(myadd, '1/2');
+        }
+
         // Show fingering in any case
         self.fingering_chart.draw_fingerings(transpose_note(note, +9));
+    };
+
+    this.funHighlightSfNoteListElementNotes = function (obj, act) {
+        self.fingering_chart.draw_fingerings(obj.my_note);
+    };
+
+    this.funHighlightSfNoteListElementLookaroundNotes = function (notes) {
+        self.fingering_chart.draw_fingerings(notes);
     };
 }
 ;
