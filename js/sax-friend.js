@@ -99,6 +99,9 @@ var SF_ALTO_SAX_C_NEXT = '.sax-chart-next';
 var SF_ALTO_NOTE_LOW = 47;
 var SF_ALTO_NOTE_HIGH = 79;
 
+// Transpose the note
+var SF_MAJOR_SIXTH = 9;
+
 // Chord list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
@@ -229,7 +232,7 @@ function add_sf_note_to_player(note) {
     }
 
     // Correct pitch for playback
-    play_sf_note(transpose_note(note, -9), 0.5);
+    play_sf_note(transpose_note(note, -SF_MAJOR_SIXTH), 0.5);
 }
 
 // Audio context sound player
@@ -955,7 +958,8 @@ function comptoolsSfNotePlayer(player_class)
         // Start playing the note, if not legato
         if (!current_event.legato) {
             // Play the notes
-            player_play_sf_note(transpose_note(current_event.object.my_note, -9),
+            player_play_sf_note(transpose_note(current_event.object.my_note,
+                -SF_MAJOR_SIXTH),
                     current_event.duration);
 
             // Also highlight the notes
@@ -1090,7 +1094,7 @@ function InstrumentGlueSax() {
 
         // Automatically transpose and
         // add only if within range
-        var myadd = transpose_note(note, 9);
+        var myadd = transpose_note(note, SF_MAJOR_SIXTH);
         if (get_semitone_distance(myadd) < SF_ALTO_NOTE_LOW ||
                 get_semitone_distance(myadd) > SF_ALTO_NOTE_HIGH)
         {
@@ -1101,7 +1105,7 @@ function InstrumentGlueSax() {
         }
 
         // Show fingering in any case
-        self.fingering_chart.draw_fingerings(transpose_note(note, +9));
+        self.fingering_chart.draw_fingerings(transpose_note(note, SF_MAJOR_SIXTH));
     };
 
     this.funHighlightSfNoteListElementNotes = function (obj, act) {
