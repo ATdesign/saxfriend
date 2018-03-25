@@ -45,7 +45,7 @@
             <h2 style="font-family: 'Fira Sans'">Saxophone Player's Friend</h2>
             <ul data-uk-accordion="showfirst: false; multiple: true">
                 <li>
-                    <h3 class="uk-accordion-title"> Circle of Fifths</h3>
+                    <h3 class="uk-accordion-title">Circle of Fifths: Alto Saxophone Key</h3>
                     <div class="uk-accordion-content">
                         <div class="theory" id="theory-container"></div>
                     </div>
@@ -72,12 +72,17 @@
                     </div>
                 </li>
                 <li class="uk-open">
-                    <h3 class="uk-accordion-title">Saxophone Fingering Chart</h3>
+                    <h3 class="uk-accordion-title">Alto Saxophone Fingering Chart</h3>
                     <div class="uk-accordion-content">
                         <div class="sax-chart">
                             <div class="sax-chart-prev"></div>
                             <div class="sax-chart-now"></div>
                             <div class="sax-chart-next"></div>
+                        </div>
+                        <div class="sax-chart-notes">
+                            <div class="sax-chart-prev-note"></div>
+                            <div class="sax-chart-now-note"></div>
+                            <div class="sax-chart-next-note"></div>
                         </div>
                     </div>
                 </li>
@@ -150,6 +155,10 @@
 
             // Options
             my_options = new comptoolsOptions();
+            
+            // Experimental MIDI player feature
+            comptools_midi_player = new comptoolsMIDIPlayer();
+            comptools_midi_player.initialize();
 
             // Additional options for tuning
             $('.guitar-update-tuning .change').on('click', function () {

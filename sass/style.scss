@@ -425,12 +425,14 @@ div.fretboard-bass{
 }
 
 /* Saxophone styling */
-.sax-chart-prev, .sax-chart-next{
+.sax-chart-prev, .sax-chart-next
+{
     width: 150px;
     display:inline-block;
     margin-left: 25px;
     margin-right: 25px;
     opacity: 0.7;
+    text-align: center;
 }
 
 .sax-chart-now{
@@ -441,7 +443,28 @@ div.fretboard-bass{
     border: 1px #d20050 solid;
 }
 
-.sax-chart{
+.sax-chart-prev-note{
+    width: 200px;
+    display: inline-block;
+    margin-left: 25px;
+    margin-right: 0px;
+}
+
+.sax-chart-next-note{
+    width: 200px;
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 25px;
+}
+
+.sax-chart-now-note{
+    width: 200px;
+    display:inline-block;
+    margin-left: 25px;
+    margin-right: 25px;   
+}
+
+.sax-chart, .sax-chart-notes{
     text-align: center;
 }
 

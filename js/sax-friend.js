@@ -96,13 +96,17 @@ var SF_ALTO_SAX_C_PREV = '.sax-chart-prev';
 var SF_ALTO_SAX_C_NOW = '.sax-chart-now';
 var SF_ALTO_SAX_C_NEXT = '.sax-chart-next';
 
+var SF_ALTO_SAX_CN_PREV = '.sax-chart-prev-note';
+var SF_ALTO_SAX_CN_NOW = '.sax-chart-now-note';
+var SF_ALTO_SAX_CN_NEXT = '.sax-chart-next-note';
+
 var SF_ALTO_NOTE_LOW = 47;
 var SF_ALTO_NOTE_HIGH = 79;
 
 // Transpose the note
 var SF_MAJOR_SIXTH = 9;
 
-// Chord list item specific
+// Note list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"import-sf-note-list\">Import</span> <span class=\"export-sf-note-list\">Export</span></div>";
 var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
@@ -148,9 +152,11 @@ var alto_sax_notes = {
     "F#6": {left: [1, 3, 5], right: [1]}
 }
 
-// Global counter and chord placeholder
+// Global counter and note placeholder
 var sf_note_list_counter = 0;
 var sf_note_list = [];
+
+var sf_note_last_duration = "1/4";
 
 // Play events
 var sf_note_play_events = [];
@@ -213,8 +219,8 @@ function draw_alto_fingering(note, cc) {
 }
 
 
-function add_sf_note_to_player(note) {
-    var my_note = new comptoolsSfNotePlayerElement(note);
+function add_sf_note_to_player(note, dur) {
+    var my_note = new comptoolsSfNotePlayerElement(note, dur);
     sf_note_list.push(my_note);
 
     // Because the relationship is many to one, we'll have to use
@@ -246,7 +252,7 @@ function play_sf_note(note, len) {
     // If there is MIDI support and MIDI is enabled, then play midi
     if (typeof comptools_midi_player !== "undefined" &&
             comptools_midi_player.ready && comptools_config.play_midi) {
-        comptools_midi_player.sendOnOffMessage(note, 1000 * len);
+        comptools_midi_player.sendOnOffMessage([note], 1000 * len);
     }
 
 }
@@ -263,10 +269,9 @@ function player_play_sf_note(note, len) {
 
     if (typeof comptools_midi_player !== "undefined" &&
             comptools_midi_player.ready && comptools_config.play_midi) {
-        comptools_midi_player.CyclicSendOnMessage(note);
+        comptools_midi_player.CyclicSendOnMessage([note]);
     }
-}
-;
+};
 
 // Parse the sf note player
 function parse_sf_note_player() {
@@ -278,21 +283,21 @@ function parse_sf_note_player() {
                 play_order_ids.push(d3.select(this).attr('id'));
             });
 
-    // Go through all id's and find a selected chord,
-    // if any; defaults to first chord
+    // Go through all id's and find a selected note,
+    // if any; defaults to first note
     var my_elem, sf_note_selected = -1;
     for (var k = 0; k < play_order_ids.length; k++) {
         if (d3.select('#' + SF_NOTE_LIST_ID + ' #'
                 + play_order_ids[k] + ' div.uk-card')
                 .classed('sf-note-selected')) {
-            chord_selected = k;
+            sf_note_selected = k;
             break;
         }
     }
 
     // NB! Note that notes marked as "legato" will NOT play if they are
     // selected and represent an actual continuation of the previous
-    // chord(s). Thus, the user must always select the first note in the
+    // note(s). Thus, the user must always select the first note in the
     // progression to hear the full duration. (TODO: Maybe fix this?)
 
     // Create the event list
@@ -311,15 +316,15 @@ function parse_sf_note_player() {
         current_sf_note = sf_note_list.get_obj_by_prop('elem_id',
                 play_order_ids[k]);
 
-        // Store the first chord to unchanged_chord so we can update
+        // Store the first note to unchanged_sf_note so we can update
         // it with additional length if legatos are used in sequence
         if (k === 0) {
             unchanged_sf_note = current_sf_note;
             unchanged_sf_note_event_ind = 0;
         }
 
-        // Check whether this chord is the same as unchanged_chord and there
-        // is a legato mark present (for all chords after the first one)
+        // Check whether this note is the same as unchanged_sf_note and there
+        // is a legato mark present (for all notes after the first one)
         var do_legato = false;
         if (k > 0 && current_sf_note.my_note === unchanged_sf_note.my_note &&
                 current_sf_note.legato) {
@@ -362,17 +367,24 @@ function parse_sf_note_player() {
 
     // This part does a look around each note in the event sequence
     // To build the "previous-current-next" trio of notes
+    
+    // Also saves the IDs of notes in the player so that 
+    // SVG staff can be copied over when needed
+    
     var ev_len = sf_note_play_events.length;
     for (var q = 0; q < ev_len; q++) {
 
         var the_note = sf_note_play_events[q].note;
+        var the_id = sf_note_play_events[q].highlight_id;
 
         // Locate the "previous" note
         var ct = q;
         var prev_note = the_note; // This is default
+        var prev_id = the_id;
         for (w = 0; w < ev_len; w++) {
             if (sf_note_play_events[ct].note !== the_note) {
                 prev_note = sf_note_play_events[ct].note;
+                prev_id = sf_note_play_events[ct].highlight_id;
                 break;
             }
             if (--ct < 0) {
@@ -383,9 +395,11 @@ function parse_sf_note_player() {
         // Locate the "next" note
         ct = q;
         var next_note = the_note; // This is default
+        var next_id = the_id;
         for (w = 0; w < ev_len; w++) {
             if (sf_note_play_events[ct].note !== the_note) {
                 next_note = sf_note_play_events[ct].note;
+                next_id = sf_note_play_events[ct].highlight_id;
                 break;
             }
             if (++ct >= ev_len) {
@@ -395,7 +409,9 @@ function parse_sf_note_player() {
 
         // Store the notes
         var the_notes = [prev_note, the_note, next_note];
+        var the_ids = [prev_id, the_id, next_id];
         sf_note_play_events[q].lookaround = the_notes;
+        sf_note_play_events[q].lookaround_ids = the_ids;
 
     }
 
@@ -446,6 +462,7 @@ function AltoSaxChart() {
     insert_alto_sax_chart(SF_ALTO_SAX_C_PREV);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NOW);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NEXT);
+    
     // Show fingering for sax key
     this.draw_fingerings = function (notes) {
 
@@ -470,12 +487,35 @@ function AltoSaxChart() {
             draw_alto_fingering(notes[k], ftod[k]);
         }
     };
+    
+    // Transfer SVG's from the divs defined by player_elem_ids to the chart
+    // NB! player_elem_id's MUST be an array with three elements
+    this.draw_notation = function (player_elem_ids){
+        
+        if (player_elem_ids.constructor !== Array || player_elem_ids.length < 3){
+            console.log("Wrong argument passed, skipping drawing notation for chart.");
+            return;
+        }
+        
+        var ftod = [SF_ALTO_SAX_CN_PREV, SF_ALTO_SAX_CN_NOW, SF_ALTO_SAX_CN_NEXT];
+        for (var k = 0; k < ftod.length; k++) {
+            // Clear previous
+            d3.select(ftod[k]).html("");
+            
+            // Get content from player element
+            var content = d3.select("#" + player_elem_ids[k] + "-canvas").html();
+            
+            // Paste it into the container
+            d3.select(ftod[k]).html(content);
+        }
+        
+    };
 }
 
 
-// **********************************
-// Chord player objects and functions
-// **********************************
+// *********************************
+// Note player objects and functions
+// *********************************
 
 // The object
 function comptoolsSfNotePlayerElement(note, dur, leg)
@@ -496,7 +536,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     // Initialization 
     var self = this;
 
-    // Check root and chord, use default (C maj) if unsupported
+    // Check note, use default (A#4) if unsupported
     var my_note = 'A#4';
     note = flats2sharps(note).toUpperCase().replace("H", "B"); // Make sure note is correct
     if (get_semitone_distance(note) < SF_ALTO_NOTE_LOW || get_semitone_distance(note) > SF_ALTO_NOTE_HIGH) {
@@ -523,12 +563,12 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         return SF_NOTE_LENGTHS[this.duration_index];
     };
 
-    // Play this chord
+    // Play this note
     this.play = function () {
         play_sf_note(this.my_note, get_duration_in_seconds(this.get_dur()));
     };
 
-    // Whether to use legato with several same chords
+    // Whether to use legato with several same notes
     this.legato = my_leg;
 
     this.elem_id = 'sf-note-list-item-' + sf_note_list_counter++;
@@ -740,6 +780,9 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         var my_dur = SF_NOTE_LENGTHS[this.duration_index];
         d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', my_dur);
+        
+        // Use this as last used notation
+        sf_note_last_duration = my_dur;
 
         self.updateNotation();
 
@@ -787,7 +830,7 @@ comptoolsSfNotePlayerElement.prototype.clickHandler = function ()
         // Assign selection
         d3.select(the_elem).classed("sf-note-selected", action);
 
-        // Update the player with currently selected chord information
+        // Update the player with currently selected note information
         if (typeof comptools_config.sf_note_player !== "undefined") {
             if (action) {
                 comptools_config.sf_note_player.current_note = self;
@@ -821,7 +864,7 @@ function comptoolsSfNotePlayer(player_class)
 
     this.playing = false;           // Player state
     this.current_event_index = 0;   // Event index for the scheduler
-    this.current_note = null;      // Currently selected chord element
+    this.current_note = null;      // Currently selected note element
 
     // Get tempo from config file if there is one
     var my_tempo = 120; // Defaults to 120 bpm
@@ -899,7 +942,7 @@ function comptoolsSfNotePlayer(player_class)
         var myev = parse_sf_note_player();
         sf_note_play_events = myev.events;
 
-        // If no chord is selected, start from the first one
+        // If no note is selected, start from the first one
         var start_sf_note = 0;
         if (myev.selected_sf_note !== -1) {
             start_sf_note = myev.selected_sf_note;
@@ -940,15 +983,15 @@ function comptoolsSfNotePlayer(player_class)
             self.current_event_index = 0;
         }
 
-        // Deselect all chords
+        // Deselect all notes
         d3.selectAll('.' + SF_NOTE_LIST_ITEM_CLASS + ' div.uk-card')
                 .classed('sf-note-selected', false);
 
-        // Select this chord
+        // Select this note
         d3.select('#' + current_event.highlight_id + " div.uk-card")
                 .classed('sf-note-selected', true);
 
-        // Update the player with currently selected chord information
+        // Update the player with currently selected note information
         if (typeof comptools_config.sf_note_player !== "undefined") {
             this.current_note = current_event.object;
         } else {
@@ -966,13 +1009,14 @@ function comptoolsSfNotePlayer(player_class)
             if (typeof comptools_config.instrument_glue !== "undefined") {
                 var my_glue = comptools_config.instrument_glue;
                 my_glue
-                        .funHighlightSfNoteListElementLookaroundNotes(current_event.lookaround);
+                  .funHighlightSfNoteListElementLookaroundNotes
+                  (current_event.lookaround, current_event.lookaround_ids);
             }
 
         }
     };
 
-    // Clear all chords
+    // Clear all notes
     this.clear = function () {
         if (sf_note_list !== undefined) {
             while (sf_note_list.length > 0) {
@@ -981,7 +1025,7 @@ function comptoolsSfNotePlayer(player_class)
         }
     };
 
-    // Export chords
+    // Export notes
     this.export_notes = function () {
 
         // TODO: Add transpose on export option
@@ -1018,7 +1062,7 @@ function comptoolsSfNotePlayer(player_class)
         return add_com + text;
     };
 
-    // Import chords
+    // Import notes
     this.import_notes = function (text) {
 
         // TODO: Add transpose on import option
@@ -1035,7 +1079,7 @@ function comptoolsSfNotePlayer(player_class)
 
         for (k = 0; k < the_notes.length; k++) {
 
-            // Preprocess the chord text
+            // Preprocess the note text
             var this_note = the_notes[k].replace(/\s+/g, ' ').trim();
 
             // Break the note into pieces. Currently length determines
@@ -1101,7 +1145,7 @@ function InstrumentGlueSax() {
             // Do nothing
         } else if (action)  // If we deselect note, do nothing
         {
-            add_sf_note_to_player(myadd, '1/2');
+            add_sf_note_to_player(myadd, sf_note_last_duration);
         }
 
         // Show fingering in any case
@@ -1112,8 +1156,13 @@ function InstrumentGlueSax() {
         self.fingering_chart.draw_fingerings(obj.my_note);
     };
 
-    this.funHighlightSfNoteListElementLookaroundNotes = function (notes) {
+    this.funHighlightSfNoteListElementLookaroundNotes = function (notes, notation) {
+        
+        // Draw fingerings
         self.fingering_chart.draw_fingerings(notes);
+        
+        // Draw notation
+        self.fingering_chart.draw_notation(notation);
     };
 }
 ;
