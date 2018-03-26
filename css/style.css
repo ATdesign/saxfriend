@@ -498,6 +498,27 @@ div.fretboard-bass {
 /**************
   Note player 
 ***************/
+.sf-note-parts {
+  margin-bottom: 10px;
+  text-align: center; }
+
+select.sf-note-list-parts {
+  width: 120px; }
+
+.sf-note-part-title {
+  margin-left: 10px;
+  margin-right: 10px; }
+
+.sf-note-part-add,
+.sf-note-part-duplicate,
+.sf-note-part-remove {
+  margin-left: 10px;
+  margin-right: 10px;
+  cursor: pointer; }
+
+.sf-note-part-remove {
+  color: red; }
+
 .sf-note-list-element span.sf-note-text,
 .sf-note-list-element.uk-sortable-item span.sf-note-text,
 .sf-note-list-element.uk-sortable-placeholder span.sf-note-text {
@@ -568,7 +589,7 @@ div.fretboard-bass {
   width: 100%;
   text-align: center;
   height: 40px;
-  margin-bottom: 5px; }
+  margin-bottom: 10px; }
   .sf-note-player .sf-note-player-controls .chord-play {
     border: 1px solid #fff;
     margin: 5px;
@@ -578,6 +599,8 @@ div.fretboard-bass {
     margin: 5px;
     padding: 5px;
     cursor: pointer; }
+  .sf-note-player .sf-note-player-controls .import-sf-note-list {
+    padding-left: 10px; }
   .sf-note-player .sf-note-player-controls .sf-note-play.selected {
     border: 1px solid #d20050; }
   .sf-note-player .sf-note-player-controls .sf-note-bpm {
