@@ -498,10 +498,6 @@ div.fretboard-bass {
 /**************
   Note player 
 ***************/
-.sf-note-parts {
-  margin-bottom: 10px;
-  text-align: center; }
-
 select.sf-note-list-parts {
   width: 120px; }
 
@@ -511,7 +507,9 @@ select.sf-note-list-parts {
 
 .sf-note-part-add,
 .sf-note-part-duplicate,
-.sf-note-part-remove {
+.sf-note-part-remove,
+.sf-note-part-export,
+.sf-note-part-import {
   margin-left: 10px;
   margin-right: 10px;
   cursor: pointer; }
@@ -589,7 +587,7 @@ select.sf-note-list-parts {
   width: 100%;
   text-align: center;
   height: 40px;
-  margin-bottom: 10px; }
+  margin-bottom: 20px; }
   .sf-note-player .sf-note-player-controls .chord-play {
     border: 1px solid #fff;
     margin: 5px;

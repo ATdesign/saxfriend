@@ -42,7 +42,7 @@
 
         <!-- Create div containers -->
         <div class="all-container">
-            <h2 style="font-family: 'Fira Sans'">Saxophone Player's Friend</h2>
+            <h2 style="font-family: 'Fira Sans'; font-weight: bold;">Saxophone Player's Friend</h2>
             <ul data-uk-accordion="showfirst: false; multiple: true">
                 <li>
                     <h3 class="uk-accordion-title"><strong>Circle of Fifths:</strong> Alto Saxophone Key (Eb)</h3>
@@ -65,11 +65,7 @@
                 </li>
                 <li class="uk-open">
                     <h3 class="uk-accordion-title"><strong>Composition:</strong> Alto Saxophone Key (Eb)</h3>
-                    <div class="uk-accordion-content">
-                        <div class="sf-note-parts">
-                            <span class="sf-note-part-title">Part: </span><select class="uk-select sf-note-list-parts"><option>1</option></select> <span class="sf-note-part-add">Add</span>|<span class="sf-note-part-duplicate">Duplicate</span>|<span class="sf-note-part-remove">Remove</span>
-                        </div>
-                        
+                    <div class="uk-accordion-content">                        
                         <div class="sf-note-player">
 
                         </div>
@@ -182,6 +178,7 @@
                 fb_guitar.updateTuning("E4B3G3D3A2D2");
             });
 
+/*
             $('.import-sf-note-list').on('click', function(){
              var ntext = prompt("Paste note list text here", "");
              if (ntext !== null){
@@ -193,6 +190,7 @@
              var ntext = my_noteplayer.export_notes();
              prompt("Copy and save this text", ntext);
              });
+*/
 
             // Generate the visualization base for saxophone
             my_sax = new AltoSaxChart();
