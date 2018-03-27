@@ -178,19 +178,21 @@
                 fb_guitar.updateTuning("E4B3G3D3A2D2");
             });
 
-/*
-            $('.import-sf-note-list').on('click', function(){
-             var ntext = prompt("Paste note list text here", "");
-             if (ntext !== null){
-             my_noteplayer.import_notes(ntext);
-             }
+
+            $('.sf-note-part-import').on('click', function(){
+               UIkit.modal.prompt("Paste saved parts text here:", "").then(
+               function(text){
+                   if (text !== null && text.trim() !== ""){
+                       my_noteplayer.import_parts(text);
+                   }
+               });
              });
              
-             $('.export-sf-note-list').on('click', function(){
-             var ntext = my_noteplayer.export_notes();
-             prompt("Copy and save this text", ntext);
+             $('.sf-note-part-export').on('click', function(){
+             var ntext = my_noteplayer.export_parts();
+             UIkit.modal.prompt("Copy and save this text:", ntext, function(){});
              });
-*/
+
 
             // Generate the visualization base for saxophone
             my_sax = new AltoSaxChart();

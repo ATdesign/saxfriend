@@ -1052,6 +1052,30 @@ function comptoolsSfNotePlayer(player_class)
         this.current_part_index = this.get_part_index();
         this.import_notes(this.parts[this.current_part_index]);
     };
+    
+    this.delete_part = function(){
+        
+        // In order to avoid bugs with array size, we actually save
+        // the current part before deleting it.
+        this.parts[this.current_part_index] = this.export_notes();
+        
+        // Now we can safely delete it; however, check if this is the only
+        // part remaining. If so, just clear the notes
+        if (this.parts.length < 2){
+            this.parts = [];
+            this.current_part_index = 0;
+            this.num_parts = 1;
+            this.clear();
+            this.update_part_numbers();
+        }else{
+            // Otherwise remove the array element
+            this.parts.splice(this.current_part_index, 1);
+            this.num_parts--;
+            this.update_part_numbers();
+            this.set_last_part_number();
+            this.import_notes(this.parts[this.current_part_index]);
+        }
+    }
 
     // Parts specific
     this.add_part = function () {
@@ -1083,7 +1107,29 @@ function comptoolsSfNotePlayer(player_class)
     
     this.import_parts = function (text) {
         
+        // Split the string
+        var my_parts = text.split("|");
         
+        // Now, add the parts
+        this.clear();
+        this.parts = [];
+        this.current_part_index = 0;
+        this.num_parts = 0;
+        for (k=0; k<my_parts.length; k++){
+            this.parts.push(my_parts[k].trim());
+            this.num_parts++;
+        }
+        
+        // If there is nothing to import, set standard
+        if (this.num_parts === 0){
+            this.clear();
+            this.num_parts = 1;
+        }
+        
+        // Select the first part
+        this.update_part_numbers();
+        this.set_first_part_number();
+        this.import_notes(this.parts[this.current_part_index]);
         
     };
     
@@ -1098,6 +1144,10 @@ function comptoolsSfNotePlayer(player_class)
     
     d3.select('.sf-note-part-duplicate').on('click', function () {
         self.duplicate_part();
+    });
+    
+    d3.select('.sf-note-part-remove').on('click', function () {
+        self.delete_part();
     });
 
     // Clear all notes
