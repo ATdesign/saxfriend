@@ -1,3 +1,15 @@
+/* Global mixins */
+@mixin noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+
 div.all-container{
     display: block;
     padding-top: 20px;
@@ -78,6 +90,7 @@ div.chord-player{
 
 #scale-pentatonic{
     cursor: pointer;
+    @include noselect;
 }
 
 .scale-marker,
@@ -122,6 +135,7 @@ div.chord-player{
 
 .circle-scale{
     cursor: pointer;
+    @include noselect;
 }
 
 .keyboard-white-key-default{
@@ -168,12 +182,14 @@ div.fretboard-bass{
     stroke: #555;
     stroke-width: 1px;
     cursor: pointer;
+    @include noselect;
 }
 
 .fretboard-marker-default {
   fill: #eee;
   stroke: #555;
   cursor: pointer;
+  @include noselect;
   }
 
  .keyboard-marker-inactive{
@@ -204,6 +220,7 @@ div.fretboard-bass{
 
 .chordbuild-marker, .chordbuild-add, .chordbuild-chord{
     cursor: pointer;
+    @include noselect;
 }
 
 .chordbuild-marker circle, .chordbuild-chord rect{
@@ -319,6 +336,7 @@ div.fretboard-bass{
     margin-bottom: 1em;
     .chord-text{
         cursor: pointer;
+        @include noselect;
     }
 }
 
@@ -337,6 +355,7 @@ div.fretboard-bass{
     }
     .chord-controls{
         cursor: pointer;
+        @include noselect;
     }
     
     .chord-delete{
@@ -348,6 +367,7 @@ div.fretboard-bass{
     font-size: 0.8em;
     border: 1px solid #fff;
     cursor: pointer;
+    @include noselect;
     padding: 3px;
 }
 
@@ -365,11 +385,13 @@ div.fretboard-bass{
         margin: 5px;
         padding: 5px;
         cursor: pointer;
+        @include noselect;
     }
     .import-chord-list, .export-chord-list{
         margin: 5px;
         padding: 5px;
         cursor: pointer;
+        @include noselect;
     }
     .chord-play.selected{
         border: 1px solid #d20050;
@@ -422,6 +444,7 @@ div.fretboard-bass{
     text-align: center;
     font-size: 0.8em;
     cursor: pointer;
+    @include noselect;
 }
 
 /* Saxophone styling */
@@ -501,6 +524,7 @@ select.sf-note-list-parts{
     margin-left: 10px;
     margin-right: 10px;
     cursor: pointer;
+    @include noselect;
 }
 
 .sf-note-part-remove{
@@ -542,6 +566,7 @@ select.sf-note-list-parts{
     margin-bottom: 1em;
     .chord-text{
         cursor: pointer;
+        @include noselect;
     }
 }
 
@@ -565,6 +590,7 @@ select.sf-note-list-parts{
     }
     .sf-note-controls{
         cursor: pointer;
+        @include noselect;
     }
     
     .sf-note-delete{
@@ -574,18 +600,21 @@ select.sf-note-list-parts{
 
 .sf-note-play{
     cursor: pointer;
+    @include noselect;
     margin: 5px;
     padding: 5px;
 }
 
 .sf-note-text{
     cursor: pointer;
+    @include noselect;
 }
 
 .sf-note-legato{
     font-size: 0.8em;
     border: 1px solid #fff;
     cursor: pointer;
+    @include noselect;
     padding: 3px;
 }
 
@@ -603,11 +632,13 @@ select.sf-note-list-parts{
         margin: 5px;
         padding: 5px;
         cursor: pointer;
+        @include noselect;
     }
     .import-sf-note-list, .export-sf-note-list{
         margin: 5px;
         padding: 5px;
         cursor: pointer;
+        @include noselect;
     }
     
     .import-sf-note-list{

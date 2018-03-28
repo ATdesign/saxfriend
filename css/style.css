@@ -1,3 +1,4 @@
+/* Global mixins */
 div.all-container {
   display: block;
   padding-top: 20px;
@@ -65,7 +66,20 @@ div.chord-player {
   width: 720px; }
 
 #scale-pentatonic {
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .scale-marker,
 .pentatonic-marker {
@@ -208,7 +222,20 @@ div.chord-player {
   opacity: 1; }
 
 .circle-scale {
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .keyboard-white-key-default {
   fill: #fff;
@@ -246,12 +273,38 @@ div.fretboard-bass {
   fill: #eee;
   stroke: #555;
   stroke-width: 1px;
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .fretboard-marker-default {
   fill: #eee;
   stroke: #555;
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .keyboard-marker-inactive {
   opacity: 0; }
@@ -273,7 +326,20 @@ div.fretboard-bass {
   opacity: 1; }
 
 .chordbuild-marker, .chordbuild-add, .chordbuild-chord {
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .chordbuild-marker circle, .chordbuild-chord rect {
   fill: #fff;
@@ -365,7 +431,20 @@ div.fretboard-bass {
   text-align: left;
   margin-bottom: 1em; }
   .chord-header .chord-text {
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
 
 .chord-option {
   width: 100%;
@@ -379,7 +458,20 @@ div.fretboard-bass {
     margin-left: 5px;
     margin-right: 5px; }
   .chord-option .chord-controls {
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .chord-option .chord-delete {
     color: red; }
 
@@ -387,6 +479,19 @@ div.fretboard-bass {
   font-size: 0.8em;
   border: 1px solid #fff;
   cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */
   padding: 3px; }
 
 .chord-legato.selected {
@@ -401,11 +506,37 @@ div.fretboard-bass {
     border: 1px solid #fff;
     margin: 5px;
     padding: 5px;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .chord-player .chord-player-controls .import-chord-list, .chord-player .chord-player-controls .export-chord-list {
     margin: 5px;
     padding: 5px;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .chord-player .chord-player-controls .chord-play.selected {
     border: 1px solid #d20050; }
   .chord-player .chord-player-controls .chord-bpm {
@@ -447,7 +578,20 @@ div.fretboard-bass {
   width: 100%;
   text-align: center;
   font-size: 0.8em;
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 /* Saxophone styling */
 .sax-chart-prev, .sax-chart-next {
@@ -512,7 +656,20 @@ select.sf-note-list-parts {
 .sf-note-part-import {
   margin-left: 10px;
   margin-right: 10px;
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .sf-note-part-remove {
   color: red; }
@@ -544,7 +701,20 @@ select.sf-note-list-parts {
   text-align: left;
   margin-bottom: 1em; }
   .sf-note-header .chord-text {
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
 
 .sf-note-list-element .sf-note-canvas {
   width: 100%;
@@ -562,22 +732,74 @@ select.sf-note-list-parts {
     margin-left: 5px;
     margin-right: 5px; }
   .sf-note-option .sf-note-controls {
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .sf-note-option .sf-note-delete {
     color: red; }
 
 .sf-note-play {
   cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */
   margin: 5px;
   padding: 5px; }
 
 .sf-note-text {
-  cursor: pointer; }
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
 
 .sf-note-legato {
   font-size: 0.8em;
   border: 1px solid #fff;
   cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */
   padding: 3px; }
 
 .sf-note-legato.selected {
@@ -592,11 +814,37 @@ select.sf-note-list-parts {
     border: 1px solid #fff;
     margin: 5px;
     padding: 5px;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .sf-note-player .sf-note-player-controls .import-sf-note-list, .sf-note-player .sf-note-player-controls .export-sf-note-list {
     margin: 5px;
     padding: 5px;
-    cursor: pointer; }
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+       supported by Chrome and Opera */ }
   .sf-note-player .sf-note-player-controls .import-sf-note-list {
     padding-left: 10px; }
   .sf-note-player .sf-note-player-controls .sf-note-play.selected {
