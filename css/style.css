@@ -639,6 +639,29 @@ div.fretboard-bass {
 .sf-sax-right.sf-sax-active {
   fill: #37d873; }
 
+#noterel-1 text,
+#noterel-2 text,
+#noterel-3 text,
+#noterel-4 text,
+#noterel-5 text,
+#noterel-6 text,
+#noterel-7 text,
+#noterel-8 text {
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+     supported by Chrome and Opera */ }
+
 /**************
   Note player 
 ***************/
