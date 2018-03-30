@@ -503,6 +503,21 @@ div.fretboard-bass{
     fill: #37d873;
 }
 
+#noterel-1,
+#noterel-2,
+#noterel-3,
+#noterel-4,
+#noterel-5,
+#noterel-6,
+#noterel-7,
+#noterel-8{
+    text{
+        cursor: pointer;
+        @include noselect;
+    }
+    
+}
+
 /**************
   Note player 
 ***************/
@@ -566,8 +581,12 @@ select.sf-note-list-parts{
     margin-bottom: 1em;
     .chord-text{
         cursor: pointer;
-        @include noselect;
     }
+    @include noselect;
+}
+
+.sf-note-actions{
+    @include noselect;
 }
 
 .sf-note-list-element .sf-note-canvas{

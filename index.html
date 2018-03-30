@@ -122,13 +122,13 @@
         </script>
 
         <!-- THE test script -->
-        <script src="js/composer-tools.min.js"></script>
+        <script src="js/composer-tools.js"></script>
         <script src="js/sax-friend.js"></script>
 
         <!-- Create a couple of fretboards ... -->
         <script type="text/javascript">
             my_theory = new comptoolsTheory("theory-container");
-
+            
             st_keyboard = new comptoolsKeyboard(".keyboard", "C2-C6");
 
             fb_guitar = new comptoolsFretboard(".fb-guitar", "E4B3G3D3A2E2");
@@ -141,8 +141,8 @@
             st_keyboard.selection_callback = the_glue.funCallback;
             fb_guitar.selection_callback = the_glue.funCallback;
 
-            /*the_glue.theory = my_theory;
-             my_theory.selection_callback = the_glue.funHighlightNotes;*/
+            the_glue.theory = my_theory;
+            my_theory.note_selection_callback = the_glue.addNoteFromTheory;
 
 
             // For the chord player, we must set the instrument glue config

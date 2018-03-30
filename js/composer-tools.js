@@ -738,6 +738,18 @@ function comptoolsTheory(cont_id) {
             }
         });
 
+        // Assign actions
+        for (var k = 1; k < 9; k++) {
+            // Assign the actions
+            (function () {
+                var kk=k;
+                d3.select("#noterel-" + k + " text").on("click", function () {
+                    self.note_selection_callback(d3.select(this).html(),
+                            (self.root === "none" ? "" : self.root), kk);
+                });
+            })();
+        }
+
     });
 
     // TODO: Not extremely versatile, should rewrite ...
@@ -1965,9 +1977,9 @@ function comptoolsChordPlayerElement(root, chord, dur, oct, leg)
     {
         my_oct = oct;
     }
-    
+
     var my_leg = false;
-    if (leg !== undefined){
+    if (leg !== undefined) {
         my_leg = leg;
     }
 
@@ -1977,17 +1989,17 @@ function comptoolsChordPlayerElement(root, chord, dur, oct, leg)
     // Check root and chord, use default (C maj) if unsupported
     var my_root = 'C';
     root = flats2sharps(root).toUpperCase().replace("H", "B"); // Make sure root is correct
-    if (note_array.indexOf(root) !== -1){
+    if (note_array.indexOf(root) !== -1) {
         my_root = root;
-    }else{
+    } else {
         console.log('Wrong chord root detected. Using default value.');
     }
-    
+
     var my_chord = 'maj';
     chord = chord.toLowerCase();
-    if (chord_structures.hasOwnProperty(chord)){
+    if (chord_structures.hasOwnProperty(chord)) {
         my_chord = chord;
-    }else{
+    } else {
         console.log('Wrong chord detected. Using default value.');
     }
 
@@ -1999,14 +2011,14 @@ function comptoolsChordPlayerElement(root, chord, dur, oct, leg)
 
     // Indices for duration and octave: defaults to length of 1/2 and 3rd octave
     this.duration_index = CHORD_LENGTHS.indexOf(my_dur);
-    if (this.duration_index === -1){
+    if (this.duration_index === -1) {
         my_dur = '1/2';
         this.duration_index = CHORD_LENGTHS.indexOf('1/2');
         console.log('Wrong duration detected. Using default value.');
     }
-    
+
     this.octave_index = CHORD_OCTAVES.indexOf(my_oct);
-    if (this.octave_index === -1){
+    if (this.octave_index === -1) {
         my_oct = 3;
         this.octave_index = CHORD_OCTAVES.indexOf(3);
         console.log('Wrong octave detected. Using default value.');
@@ -2581,11 +2593,11 @@ function comptoolsChordPlayer(player_class)
         if (text.slice(-1) === ";") {
             text = text.substr(0, text.length - 1);
         }
-        
+
         // Add the comment with some additional information
         var add_com = "";
-        if (comptools_config.theory !== undefined && 
-                comptools_config.theory.root !== "null"){
+        if (comptools_config.theory !== undefined &&
+                comptools_config.theory.root !== "null") {
             add_com = "{*Scale: " + comptools_config.theory.root + " " +
                     comptools_config.theory.scale + "*} ";
         }
@@ -2598,7 +2610,7 @@ function comptoolsChordPlayer(player_class)
 
         // Clear the current chords
         this.clear();
-        
+
         // Remove the comments
         text = text.replace(/{\*.*\*}/, "");
 
@@ -2619,22 +2631,22 @@ function comptoolsChordPlayer(player_class)
 
             // Parse depending on the length
             if (chord_elem.length === 4 || chord_elem.length === 5) {
-                
+
                 // Root, chord, duration, octave
                 var my_root = chord_elem[0];
                 var my_chord = chord_elem[1];
                 var my_dur = chord_elem[2];
                 var my_oct = parseInt(chord_elem[3]);
-                
+
                 // Determine whether this is a legato
                 var my_leg = false;
-                if (chord_elem.length === 5 && chord_elem[4] === 'leg'){
+                if (chord_elem.length === 5 && chord_elem[4] === 'leg') {
                     my_leg = true;
                 }
-                
+
                 // Add the chord to timeline
                 var my_chord = new comptoolsChordPlayerElement(my_root,
-                            my_chord, my_dur, my_oct, my_leg);
+                        my_chord, my_dur, my_oct, my_leg);
                 chord_list.push(my_chord);
 
                 // Because the relationship is many to one, we'll have to use

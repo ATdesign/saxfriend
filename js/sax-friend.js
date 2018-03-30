@@ -273,7 +273,8 @@ function player_play_sf_note(note, len) {
             comptools_midi_player.ready && comptools_config.play_midi) {
         comptools_midi_player.CyclicSendOnMessage([note]);
     }
-};
+}
+;
 
 // Parse the sf note player
 function parse_sf_note_player() {
@@ -369,10 +370,10 @@ function parse_sf_note_player() {
 
     // This part does a look around each note in the event sequence
     // To build the "previous-current-next" trio of notes
-    
+
     // Also saves the IDs of notes in the player so that 
     // SVG staff can be copied over when needed
-    
+
     var ev_len = sf_note_play_events.length;
     for (var q = 0; q < ev_len; q++) {
 
@@ -464,7 +465,7 @@ function AltoSaxChart() {
     insert_alto_sax_chart(SF_ALTO_SAX_C_PREV);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NOW);
     insert_alto_sax_chart(SF_ALTO_SAX_C_NEXT);
-    
+
     // Show fingering for sax key
     this.draw_fingerings = function (notes) {
 
@@ -489,28 +490,28 @@ function AltoSaxChart() {
             draw_alto_fingering(notes[k], ftod[k]);
         }
     };
-    
+
     // Transfer SVG's from the divs defined by player_elem_ids to the chart
     // NB! player_elem_id's MUST be an array with three elements
-    this.draw_notation = function (player_elem_ids){
-        
-        if (player_elem_ids.constructor !== Array || player_elem_ids.length < 3){
+    this.draw_notation = function (player_elem_ids) {
+
+        if (player_elem_ids.constructor !== Array || player_elem_ids.length < 3) {
             console.log("Wrong argument passed, skipping drawing notation for chart.");
             return;
         }
-        
+
         var ftod = [SF_ALTO_SAX_CN_PREV, SF_ALTO_SAX_CN_NOW, SF_ALTO_SAX_CN_NEXT];
         for (var k = 0; k < ftod.length; k++) {
             // Clear previous
             d3.select(ftod[k]).html("");
-            
+
             // Get content from player element
             var content = d3.select("#" + player_elem_ids[k] + "-canvas").html();
-            
+
             // Paste it into the container
             d3.select(ftod[k]).html(content);
         }
-        
+
     };
 }
 
@@ -782,7 +783,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         var my_dur = SF_NOTE_LENGTHS[this.duration_index];
         d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', my_dur);
-        
+
         // Use this as last used notation
         sf_note_last_duration = my_dur;
 
@@ -841,7 +842,7 @@ comptoolsSfNotePlayerElement.prototype.clickHandler = function ()
             }
         }
 
-        // Check if the note list exists and envoke the selection_callback
+        // Check if the note list exists and invoke the selection_callback
         if (typeof sf_note_list !== "undefined") {
             // Pass the object reference to selection callback
             var my_elem_id = d3.select(the_elem.parentElement).attr('id');
@@ -867,7 +868,7 @@ function comptoolsSfNotePlayer(player_class)
     this.playing = false;           // Player state
     this.current_event_index = 0;   // Event index for the scheduler
     this.current_note = null;       // Currently selected note element
-    
+
     this.current_part_index = 0;    // Current part index
     this.num_parts = 1;             // Number of parts
     this.parts = [];                // Placeholder for parts
@@ -1008,66 +1009,70 @@ function comptoolsSfNotePlayer(player_class)
         if (!current_event.legato) {
             // Play the notes
             player_play_sf_note(transpose_note(current_event.object.my_note,
-                -SF_MAJOR_SIXTH),
+                    -SF_MAJOR_SIXTH),
                     current_event.duration);
 
             // Also highlight the notes
             if (typeof comptools_config.instrument_glue !== "undefined") {
                 var my_glue = comptools_config.instrument_glue;
                 my_glue
-                  .funHighlightSfNoteListElementLookaroundNotes
-                  (current_event.lookaround, current_event.lookaround_ids);
+                        .funHighlightSfNoteListElementLookaroundNotes
+                        (current_event.lookaround, current_event.lookaround_ids);
+                        
+                // Also show the note on original instruments
+                my_glue.updateNotes(transpose_note(current_event.note,
+                        -SF_MAJOR_SIXTH, true));
             }
 
         }
     };
 
     // Get current part index
-    this.get_part_index = function (){
+    this.get_part_index = function () {
         // Fetch index by class name
-        return parseInt(d3.select(SF_NOTE_PARTS_LIST).property("value"))-1;
-    };
-    
-    this.update_part_numbers = function(){
-        var the_list = d3.select(SF_NOTE_PARTS_LIST).html("");
-        for (k=0; k < this.num_parts; k++){
-            the_list.append('option').text(k+1);
-        }
-    };
-    
-    this.set_first_part_number = function(){
-      d3.select(SF_NOTE_PARTS_LIST).property('value', '1');
-      this.current_part_index = 0;
-    };
-    
-    this.set_last_part_number = function(){
-        d3.select(SF_NOTE_PARTS_LIST).property('value', 
-        String(this.num_parts));
-        this.current_part_index = this.num_parts-1; 
+        return parseInt(d3.select(SF_NOTE_PARTS_LIST).property("value")) - 1;
     };
 
-    this.set_part = function(){
+    this.update_part_numbers = function () {
+        var the_list = d3.select(SF_NOTE_PARTS_LIST).html("");
+        for (k = 0; k < this.num_parts; k++) {
+            the_list.append('option').text(k + 1);
+        }
+    };
+
+    this.set_first_part_number = function () {
+        d3.select(SF_NOTE_PARTS_LIST).property('value', '1');
+        this.current_part_index = 0;
+    };
+
+    this.set_last_part_number = function () {
+        d3.select(SF_NOTE_PARTS_LIST).property('value',
+                String(this.num_parts));
+        this.current_part_index = this.num_parts - 1;
+    };
+
+    this.set_part = function () {
         // Save current part first
         this.parts[this.current_part_index] = this.export_notes();
         this.current_part_index = this.get_part_index();
         this.import_notes(this.parts[this.current_part_index]);
     };
-    
-    this.delete_part = function(){
-        
+
+    this.delete_part = function () {
+
         // In order to avoid bugs with array size, we actually save
         // the current part before deleting it.
         this.parts[this.current_part_index] = this.export_notes();
-        
+
         // Now we can safely delete it; however, check if this is the only
         // part remaining. If so, just clear the notes
-        if (this.parts.length < 2){
+        if (this.parts.length < 2) {
             this.parts = [];
             this.current_part_index = 0;
             this.num_parts = 1;
             this.clear();
             this.update_part_numbers();
-        }else{
+        } else {
             // Otherwise remove the array element
             this.parts.splice(this.current_part_index, 1);
             this.num_parts--;
@@ -1086,66 +1091,66 @@ function comptoolsSfNotePlayer(player_class)
         this.update_part_numbers();
         this.set_last_part_number();
     }
-    
+
     // Same as add_part, but doesn't clear
-    this.duplicate_part = function() {
+    this.duplicate_part = function () {
         this.parts.push(this.export_notes());
         this.num_parts++;
         this.update_part_numbers();
         this.set_last_part_number();
     };
-    
+
     // Additional import/export facilities for parts
-    this.export_parts = function() {
-        
+    this.export_parts = function () {
+
         // Store the current part to the array
         this.parts[this.current_part_index] = this.export_notes();
-      
+
         // Now simply combine all parts together and return the result
         return this.parts.join(" | ");
     };
-    
+
     this.import_parts = function (text) {
-        
+
         // Split the string
         var my_parts = text.split("|");
-        
+
         // Now, add the parts
         this.clear();
         this.parts = [];
         this.current_part_index = 0;
         this.num_parts = 0;
-        for (k=0; k<my_parts.length; k++){
+        for (k = 0; k < my_parts.length; k++) {
             this.parts.push(my_parts[k].trim());
             this.num_parts++;
         }
-        
+
         // If there is nothing to import, set standard
-        if (this.num_parts === 0){
+        if (this.num_parts === 0) {
             this.clear();
             this.num_parts = 1;
         }
-        
+
         // Select the first part
         this.update_part_numbers();
         this.set_first_part_number();
         this.import_notes(this.parts[this.current_part_index]);
-        
+
     };
-    
+
     // Set up part controls
     d3.select('.sf-note-list-parts').on('change', function () {
         self.set_part();
     });
-    
+
     d3.select('.sf-note-part-add').on('click', function () {
         self.add_part();
     });
-    
+
     d3.select('.sf-note-part-duplicate').on('click', function () {
         self.duplicate_part();
     });
-    
+
     d3.select('.sf-note-part-remove').on('click', function () {
         self.delete_part();
     });
@@ -1258,6 +1263,7 @@ function InstrumentGlueSax() {
     this.objArray = new Array();
 
     this.fingering_chart = null;
+    this.theory = null;
 
     var self = this;
 
@@ -1281,24 +1287,62 @@ function InstrumentGlueSax() {
         {
             add_sf_note_to_player(myadd, sf_note_last_duration);
             self.fingering_chart.draw_fingerings(transpose_note(note, SF_MAJOR_SIXTH));
-            var noi = sf_note_list[sf_note_list.length-1].elem_id;
+            var noi = sf_note_list[sf_note_list.length - 1].elem_id;
             self.fingering_chart.draw_notation([noi, noi, noi]);
         }
-        
+
+    };
+    
+    this.updateNotes = function (note, action)
+    {
+        for (var k = 0; k < self.objArray.length; k++)
+        {
+            // Call all functions in array with the update information
+            self.objArray[k].updateExclusiveNote(note, action);
+        }
     };
 
     this.funHighlightSfNoteListElementNotes = function (obj, act) {
         self.fingering_chart.draw_fingerings(obj.my_note);
         self.fingering_chart.draw_notation([obj.elem_id, obj.elem_id, obj.elem_id]);
+        self.updateNotes(transpose_note(obj.my_note, -SF_MAJOR_SIXTH));
+    };
+
+    this.addNoteFromTheory = function (note, root, dist) {
+        // Use root information to determine the note
+        if (root !== "null" && root !== ""){
+            var my_root = flats2sharps(root) + "4";
+            var the_note = flats2sharps(note) + "4";
+           
+            if (get_semitone_distance(the_note) < get_semitone_distance(my_root))
+            {
+                the_note = transpose_note(the_note, 12);
+            }
+            
+            console.log(dist);
+            // If last note, transpose +12 from root
+            if (dist === 8){
+               the_note = transpose_note(my_root, 12);
+            }
+            
+            add_sf_note_to_player(the_note, sf_note_last_duration);
+            self.fingering_chart.draw_fingerings(the_note);
+            var noi = sf_note_list[sf_note_list.length - 1].elem_id;
+            self.fingering_chart.draw_notation([noi, noi, noi]);
+        }
     };
 
     this.funHighlightSfNoteListElementLookaroundNotes = function (notes, notation) {
-        
+
         // Draw fingerings
         self.fingering_chart.draw_fingerings(notes);
-        
+
         // Draw notation
         self.fingering_chart.draw_notation(notation);
     };
 }
 ;
+
+comptoolsTheory.prototype.note_selection_callback = function() {
+    return null;
+};
