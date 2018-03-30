@@ -163,23 +163,6 @@ var sf_note_last_duration = "1/4";
 // Play events
 var sf_note_play_events = [];
 
-// Fetch note from semitone distance to B-1
-function from_semitone_distance(dist) {
-    var sci_ind = Math.floor((dist - 1) / 12);
-    var note_index = (dist + 11) % 12;
-    return note_array[note_index] + sci_ind;
-}
-
-function transpose_note(note, semi) {
-
-    // Get note data
-    var semid = get_semitone_distance(note);
-
-    // Move the note
-    return from_semitone_distance(semid + semi);
-
-}
-
 // Insert fingering chart into container by container width
 function insert_alto_sax_chart(c_class) {
     if (c_class[0] !== ".") {
@@ -511,9 +494,18 @@ function AltoSaxChart() {
             // Paste it into the container
             d3.select(ftod[k]).html(content);
         }
+    }
 
+    this.clear_notation = function () {
+        var ftod = [SF_ALTO_SAX_CN_PREV, SF_ALTO_SAX_CN_NOW, SF_ALTO_SAX_CN_NEXT];
+        for (var k = 0; k < ftod.length; k++) {
+            // Clear previous
+            d3.select(ftod[k]).html("");
+        }
     };
+
 }
+;
 
 
 // *********************************
@@ -1018,7 +1010,7 @@ function comptoolsSfNotePlayer(player_class)
                 my_glue
                         .funHighlightSfNoteListElementLookaroundNotes
                         (current_event.lookaround, current_event.lookaround_ids);
-                        
+
                 // Also show the note on original instruments
                 my_glue.updateNotes(transpose_note(current_event.note,
                         -SF_MAJOR_SIXTH, true));
@@ -1292,7 +1284,7 @@ function InstrumentGlueSax() {
         }
 
     };
-    
+
     this.updateNotes = function (note, action)
     {
         for (var k = 0; k < self.objArray.length; k++)
@@ -1308,23 +1300,31 @@ function InstrumentGlueSax() {
         self.updateNotes(transpose_note(obj.my_note, -SF_MAJOR_SIXTH));
     };
 
+    this.funHighlightSfNoteFromMIDI = function (note) {
+        var got_note = transpose_note(note, SF_MAJOR_SIXTH);
+        self.fingering_chart.draw_fingerings(got_note);
+        self.updateNotes(note);
+        self.fingering_chart.clear_notation(); // TODO: draw notation for MIDI
+        // notes as well!
+    };
+
     this.addNoteFromTheory = function (note, root, dist) {
         // Use root information to determine the note
-        if (root !== "null" && root !== ""){
+        if (root !== "null" && root !== "") {
             var my_root = flats2sharps(root) + "4";
             var the_note = flats2sharps(note) + "4";
-           
+
             if (get_semitone_distance(the_note) < get_semitone_distance(my_root))
             {
                 the_note = transpose_note(the_note, 12);
             }
-            
+
             console.log(dist);
             // If last note, transpose +12 from root
-            if (dist === 8){
-               the_note = transpose_note(my_root, 12);
+            if (dist === 8) {
+                the_note = transpose_note(my_root, 12);
             }
-            
+
             add_sf_note_to_player(the_note, sf_note_last_duration);
             self.fingering_chart.draw_fingerings(the_note);
             var noi = sf_note_list[sf_note_list.length - 1].elem_id;
@@ -1343,6 +1343,6 @@ function InstrumentGlueSax() {
 }
 ;
 
-comptoolsTheory.prototype.note_selection_callback = function() {
+comptoolsTheory.prototype.note_selection_callback = function () {
     return null;
 };

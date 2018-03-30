@@ -98,10 +98,16 @@
                                     </div>
 
                                     <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid">
-                                        <label><input class="uk-checkbox option-use-midi" type="checkbox"> Use MIDI output</label>
+                                        <label><input class="uk-checkbox option-use-midi" type="checkbox"> Use MIDI interface</label>
                                     </div>
 
                                     <div class="uk-margin">
+                                        <p>MIDI input</p>
+                                        <select class="uk-select option-midi-input"></select>
+                                    </div>
+                                    
+                                    <div class="uk-margin">
+                                        <p>MIDI output</p>
                                         <select class="uk-select option-midi-output"></select>
                                     </div>
 
@@ -159,6 +165,13 @@
             // Experimental MIDI player feature
             comptools_midi_player = new comptoolsMIDIPlayer();
             comptools_midi_player.initialize();
+            
+            // Attach the callback for MIDI input
+            comptools_midi_player.input_received_callback =
+                    the_glue.funHighlightSfNoteFromMIDI;
+            
+            // Choose alto saxophone as the instrument
+            comptools_midi_player.MIDI_instrument = 66;
 
             // Additional options for tuning
             $('.guitar-update-tuning .change').on('click', function () {

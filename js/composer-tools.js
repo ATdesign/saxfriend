@@ -156,6 +156,23 @@ function get_duration_in_ms(dur) {
     return 1000 * get_duration_in_seconds(dur);
 }
 
+// Fetch note from semitone distance to B-1
+function from_semitone_distance(dist) {
+    var sci_ind = Math.floor((dist - 1) / 12);
+    var note_index = (dist + 11) % 12;
+    return note_array[note_index] + sci_ind;
+}
+
+function transpose_note(note, semi) {
+
+    // Get note data
+    var semid = get_semitone_distance(note);
+
+    // Move the note
+    return from_semitone_distance(semid + semi);
+
+}
+
 function add_chord_to_player(note, chord) {
     var my_chord = new comptoolsChordPlayerElement(note, chord);
     chord_list.push(my_chord);
@@ -742,7 +759,7 @@ function comptoolsTheory(cont_id) {
         for (var k = 1; k < 9; k++) {
             // Assign the actions
             (function () {
-                var kk=k;
+                var kk = k;
                 d3.select("#noterel-" + k + " text").on("click", function () {
                     self.note_selection_callback(d3.select(this).html(),
                             (self.root === "none" ? "" : self.root), kk);
@@ -2701,8 +2718,15 @@ comptoolsMIDIPlayer = function () {
     var self = this;
 
     // Properties
+    this.MIDI_inputs = [];
     this.MIDI_outputs = [];
     this.MIDI_current_output = null;
+    this.MIDI_current_input = null;
+    this.MIDI_input_channel = 1;
+
+    // A program change message will be sent upon each MIDI output change
+    this.MIDI_instrument = null;
+
     this.midi = null;
     this.ready = false;
 
@@ -2735,16 +2759,17 @@ comptoolsMIDIPlayer = function () {
                 self.MIDI_outputs.push({"name": key.name, "id": port});
             });
 
+            // Do the same for inputs
+            self.MIDI_inputs = [];
+            self.midi.inputs.forEach(function (key, port) {
+                self.MIDI_inputs.push({"name": key.name, "id": port});
+            });
+
             // Are there any available outputs?
             if (self.MIDI_outputs.length > 0) {
                 self.MIDI_current_output =
                         self.MIDI_outputs[0].id; // Default output
                 self.ready = true;
-
-                // Populate the controls (if present)
-                self
-                        .populateOptionsForm('option-use-midi',
-                                'option-midi-output');
 
             } else
             {
@@ -2752,6 +2777,22 @@ comptoolsMIDIPlayer = function () {
                 self.ready = false;
                 console.log('There are no available MIDI outputs.');
             }
+
+            // Are there any available inputs?
+            if (self.MIDI_inputs.length > 0) {
+                self.MIDI_current_input =
+                        self.MIDI_inputs[0].id; // Default output
+                // Populate the controls (if present)
+
+
+            } else
+            {
+                self.MIDI_current_input = null;
+                console.log('There are no available MIDI inputs.');
+            }
+
+            self.populateOptionsForm('option-use-midi',
+                    'option-midi-output', 'option-midi-input');
 
             return self;
         },
@@ -2761,8 +2802,10 @@ comptoolsMIDIPlayer = function () {
 
     };
 
+
+
     // This is used to create the GUI element which has the output list
-    this.populateOptionsForm = function (chk_class, sel_class) {
+    this.populateOptionsForm = function (chk_class, sel_class, inp_class) {
 
         // Use d3.js to add options to a select field
 
@@ -2780,6 +2823,36 @@ comptoolsMIDIPlayer = function () {
         // Create the callbacks
         my_sel.on('change', function (d) {
             self.MIDI_current_output = d3.select(this).property("value");
+            self.do_program_change();
+        });
+
+        var my_inp = d3.select('select.' + inp_class);
+        my_inp.html();
+
+        for (var k = 0; k < this.MIDI_inputs.length; k++) {
+            my_inp.append('option')
+                    .attr('value', this.MIDI_inputs[k].id)
+                    .text(this.MIDI_inputs[k].name);
+
+            // Use first input by default
+            if (k === 0) {
+                this.MIDI_current_input = this.MIDI_inputs[k].id;
+                this.midi.inputs.get(this.MIDI_current_input)
+                        .onmidimessage = this.handleMIDIInput;
+            }
+        }
+
+        // Create the callbacks
+        my_inp.on('change', function (d) {
+            // Remove current binding
+            self.midi.inputs.get(self.MIDI_current_input)
+                    .onmidimessage = null;
+
+            // Setup new binding
+            self.MIDI_current_input = d3.select(this).property("value");
+            self.midi.inputs.get(self.MIDI_current_input)
+                    .onmidimessage = self.handleMIDIInput;
+
         });
 
         var my_chk = d3.select('input.' + chk_class);
@@ -2788,6 +2861,7 @@ comptoolsMIDIPlayer = function () {
             // This changes the general option and
             // does not modify the MIDI player object
             comptools_config.play_midi = d3.select(this).property('checked');
+            comptools_midi_player.do_program_change();
 
         });
 
@@ -2795,6 +2869,41 @@ comptoolsMIDIPlayer = function () {
     };
 
     this.note_buffer = [];  // Stores on notes to flush on next send
+
+
+    // If an instrument is set, use it
+    this.do_program_change = function () {
+        if (!this.ready) {
+            return false;
+        }
+
+        if (this.MIDI_instrument !== null) {
+            // Formulate the message
+            var control_msg = [192, this.MIDI_instrument];
+
+            // Send the message
+            this.midi.outputs.get(this.MIDI_current_output).send(control_msg)
+        }
+    };
+
+
+    // Handle MIDI input
+    this.handleMIDIInput = function (event) {
+        // Handle input only if option is enabled
+        if (comptools_config.play_midi) {
+            // Parse the command, on "note on" message invoke the callback
+            switch (event.data[0] & 0xf0) {
+                case 0x90:
+                    if (event.data[2] != 0) {  // if velocity != 0, this is a note-on message
+                        self.input_received_callback(
+                                from_semitone_distance(event.data[1] - 11));
+                    }
+                case 0x80:
+                    // Do nothing
+                    return;
+            }
+        }
+    };
 
     this.flushNoteBuffer = function () {
         this.sendOffMessage(this.note_buffer); // Stop playing notes
@@ -2888,4 +2997,8 @@ comptoolsMIDIPlayer = function () {
 
     };
 
-}
+};
+
+comptoolsMIDIPlayer.prototype.input_received_callback = function () {
+    return null;
+};
