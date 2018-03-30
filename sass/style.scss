@@ -581,8 +581,12 @@ select.sf-note-list-parts{
     margin-bottom: 1em;
     .chord-text{
         cursor: pointer;
-        @include noselect;
     }
+    @include noselect;
+}
+
+.sf-note-actions{
+    @include noselect;
 }
 
 .sf-note-list-element .sf-note-canvas{

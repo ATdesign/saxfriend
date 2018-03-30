@@ -842,7 +842,7 @@ comptoolsSfNotePlayerElement.prototype.clickHandler = function ()
             }
         }
 
-        // Check if the note list exists and envoke the selection_callback
+        // Check if the note list exists and invoke the selection_callback
         if (typeof sf_note_list !== "undefined") {
             // Pass the object reference to selection callback
             var my_elem_id = d3.select(the_elem.parentElement).attr('id');
@@ -1018,6 +1018,10 @@ function comptoolsSfNotePlayer(player_class)
                 my_glue
                         .funHighlightSfNoteListElementLookaroundNotes
                         (current_event.lookaround, current_event.lookaround_ids);
+                        
+                // Also show the note on original instruments
+                my_glue.updateNotes(transpose_note(current_event.note,
+                        -SF_MAJOR_SIXTH, true));
             }
 
         }
@@ -1288,10 +1292,20 @@ function InstrumentGlueSax() {
         }
 
     };
+    
+    this.updateNotes = function (note, action)
+    {
+        for (var k = 0; k < self.objArray.length; k++)
+        {
+            // Call all functions in array with the update information
+            self.objArray[k].updateExclusiveNote(note, action);
+        }
+    };
 
     this.funHighlightSfNoteListElementNotes = function (obj, act) {
         self.fingering_chart.draw_fingerings(obj.my_note);
         self.fingering_chart.draw_notation([obj.elem_id, obj.elem_id, obj.elem_id]);
+        self.updateNotes(transpose_note(obj.my_note, -SF_MAJOR_SIXTH));
     };
 
     this.addNoteFromTheory = function (note, root, dist) {
