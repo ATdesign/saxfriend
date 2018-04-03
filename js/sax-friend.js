@@ -1306,6 +1306,13 @@ function InstrumentGlueSax() {
         self.updateNotes(note);
         self.fingering_chart.clear_notation(); // TODO: draw notation for MIDI
         // notes as well!
+        
+        // If MIDI input is enabled, also add it to player
+        if (comptools_config.use_midi_input){
+            add_sf_note_to_player(got_note, sf_note_last_duration);
+        };
+        
+        
     };
 
     this.addNoteFromTheory = function (note, root, dist) {

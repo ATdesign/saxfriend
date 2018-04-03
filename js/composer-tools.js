@@ -107,6 +107,7 @@ var comptools_config = {
     "time_signature": "4/4",
     "play_sound": true,
     "play_midi": false,
+    "use_midi_input": false,
     "instrument_glue": null, // Reference to instrument glue
     "theory": null, // Reference to theory
     "chord_player": null, // Reference to chord player
@@ -2792,7 +2793,7 @@ comptoolsMIDIPlayer = function () {
             }
 
             self.populateOptionsForm('option-use-midi',
-                    'option-midi-output', 'option-midi-input');
+                    'option-midi-output', 'option-midi-input', 'option-use-midi-input');
 
             return self;
         },
@@ -2805,7 +2806,8 @@ comptoolsMIDIPlayer = function () {
 
 
     // This is used to create the GUI element which has the output list
-    this.populateOptionsForm = function (chk_class, sel_class, inp_class) {
+    this.populateOptionsForm = function (chk_class, sel_class,
+            inp_class, midi_inp_class) {
 
         // Use d3.js to add options to a select field
 
@@ -2862,6 +2864,15 @@ comptoolsMIDIPlayer = function () {
             // does not modify the MIDI player object
             comptools_config.play_midi = d3.select(this).property('checked');
             comptools_midi_player.do_program_change();
+
+        });
+        
+        var my_inpchk = d3.select('input.' + midi_inp_class);
+        my_inpchk.on('change', function (d) {
+
+            // This changes the general option and
+            // does not modify the MIDI player object
+            comptools_config.use_midi_input = d3.select(this).property('checked');
 
         });
 
