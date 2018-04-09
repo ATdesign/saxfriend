@@ -226,6 +226,59 @@ function add_sf_note_to_player(note, dur) {
     play_sf_note(transpose_note(note, -SF_MAJOR_SIXTH), 0.5);
 }
 
+function add_sf_note_to_player_after_id(the_id, note, dur, leg) {
+
+    var the_ind = sf_note_list
+            .indexOf(sf_note_list.get_obj_by_prop('elem_id', the_id));
+    // Check index
+    if (the_ind !== -1) {
+        var my_note = new comptoolsSfNotePlayerElement(note, dur, leg);
+        sf_note_list.splice(the_ind, 0, my_note);
+
+        if (typeof comptools_config.instrument_glue !== "undefined") {
+            my_note.selection_callback =
+                    comptools_config
+                    .instrument_glue
+                    .funHighlightSfNoteListElementNotes;
+        }
+
+        if (typeof comptools_config.sf_note_player !== "undefined") {
+            comptools_config.sf_note_player.update_callback();
+
+            // Correct pitch for playback
+            play_sf_note(transpose_note(note, -SF_MAJOR_SIXTH), 0.5);
+        }
+
+    }
+}
+
+// This will add a legato note of specified duration to the given note
+function add_sf_note_to_player_add_duration(the_id, dur) {
+
+    var the_pn = sf_note_list.get_obj_by_prop('elem_id', the_id);
+    var the_ind = sf_note_list.indexOf(the_pn);
+    // Check index
+    if (the_ind !== -1) {
+        var this_note = the_pn.my_note;
+        var to_add_ind = the_ind;
+        var k = the_ind + 1;
+        while (k < sf_note_list.length) {
+            if (sf_note_list[k].my_note === this_note &&
+                    sf_note_list[k].legato) {
+                to_add_ind = k++;
+            } else
+            {
+                break;
+            }
+        }
+    }
+    
+    // Get the index of the last note in legato sequence
+    var the_new_id = sf_note_list[to_add_ind].elem_id;
+    add_sf_note_to_player_after_id(the_new_id, this_note, dur, true);
+
+}
+
 // Audio context sound player
 function play_sf_note(note, len) {
     // Check if there is audio context and that sound is enabled
@@ -1306,13 +1359,14 @@ function InstrumentGlueSax() {
         self.updateNotes(note);
         self.fingering_chart.clear_notation(); // TODO: draw notation for MIDI
         // notes as well!
-        
+
         // If MIDI input is enabled, also add it to player
-        if (comptools_config.use_midi_input){
+        if (comptools_config.use_midi_input) {
             add_sf_note_to_player(got_note, sf_note_last_duration);
-        };
-        
-        
+        }
+        ;
+
+
     };
 
     this.addNoteFromTheory = function (note, root, dist) {
