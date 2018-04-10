@@ -158,6 +158,9 @@ var alto_sax_notes = {
 var sf_note_list_counter = 0;
 var sf_note_list = [];
 
+// Global storage for MIDI events
+var sf_midi_events = [];
+
 var sf_note_last_duration = "1/4";
 
 // Play events
@@ -203,6 +206,43 @@ function draw_alto_fingering(note, cc) {
     }
 }
 
+// Return duration in terms of notes in current tempo
+function get_legato_duration(time_seconds) {
+    // Only works if correct options are defined
+    if (typeof comptools_config !== "undefined") {
+
+        // Whole note duration
+        var wholedur = 240 / comptools_config.tempo;
+
+        // Shortest duration
+        var shortest = eval(SF_NOTE_LENGTHS[0]);
+
+        // The array of durations
+        var my_durations = [];
+        for (var l = 0; l < comptools_config.quantize_to; l++) {
+            for (var k = 0; k < SF_NOTE_LENGTHS.length; k++) {
+                var test_dur = SF_NOTE_LENGTHS[SF_NOTE_LENGTHS.length - k - 1];
+                if (time_seconds - wholedur * eval(test_dur) >= 0) {
+                    time_seconds -= wholedur * eval(test_dur);
+                    my_durations.push(test_dur);
+                    break;
+                }
+            }
+            // Nothing else to do if remaining duration shorter than this
+            if (time_seconds < shortest) {
+                break;
+            }
+        }
+
+        // Make sure there's a minimum duration returned
+        if (my_durations.length === 0) {
+            my_durations.push(SF_NOTE_LENGTHS[0]);
+        }
+
+        return my_durations;
+
+    }
+}
 
 function add_sf_note_to_player(note, dur) {
     var my_note = new comptoolsSfNotePlayerElement(note, dur);
@@ -224,6 +264,8 @@ function add_sf_note_to_player(note, dur) {
 
     // Correct pitch for playback
     play_sf_note(transpose_note(note, -SF_MAJOR_SIXTH), 0.5);
+
+    return my_note;
 }
 
 function add_sf_note_to_player_after_id(the_id, note, dur, leg) {
@@ -249,6 +291,8 @@ function add_sf_note_to_player_after_id(the_id, note, dur, leg) {
             play_sf_note(transpose_note(note, -SF_MAJOR_SIXTH), 0.5);
         }
 
+        return my_note;
+
     }
 }
 
@@ -272,10 +316,10 @@ function add_sf_note_to_player_add_duration(the_id, dur) {
             }
         }
     }
-    
+
     // Get the index of the last note in legato sequence
     var the_new_id = sf_note_list[to_add_ind].elem_id;
-    add_sf_note_to_player_after_id(the_new_id, this_note, dur, true);
+    return add_sf_note_to_player_after_id(the_new_id, this_note, dur, true);
 
 }
 
@@ -835,6 +879,15 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
         self.updateNotation();
 
     };
+    
+     // Set duration
+    this.setDuration = function(dur){
+       this.duration_index = SF_NOTE_LENGTHS.indexOf(dur);
+       d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
+                .attr('value', dur);
+        sf_note_last_duration = dur;
+        self.updateNotation();
+    };
 
     // Delete method
     this.delete = function ()
@@ -1353,7 +1406,7 @@ function InstrumentGlueSax() {
         self.updateNotes(transpose_note(obj.my_note, -SF_MAJOR_SIXTH));
     };
 
-    this.funHighlightSfNoteFromMIDI = function (note) {
+    this.funHandleMidiOn = function (note, tst) {
         var got_note = transpose_note(note, SF_MAJOR_SIXTH);
         self.fingering_chart.draw_fingerings(got_note);
         self.updateNotes(note);
@@ -1361,11 +1414,57 @@ function InstrumentGlueSax() {
         // notes as well!
 
         // If MIDI input is enabled, also add it to player
+        // And push duration into the special buffer
         if (comptools_config.use_midi_input) {
-            add_sf_note_to_player(got_note, sf_note_last_duration);
+            var objref = add_sf_note_to_player(got_note, sf_note_last_duration);
+            
+            // Push the event into the buffer
+            if (comptools_config.quantize_enabled) {
+                sf_midi_events.push(
+                        {"ref": objref,
+                            "note": got_note,
+                            "timestamp": tst}
+                );
+            }
         }
-        ;
 
+    };
+
+    this.funHandleMidiOff = function (note, tst) {
+        var got_note = transpose_note(note, SF_MAJOR_SIXTH);
+
+        // Look for the ON note in the events list
+        // If MIDI input is enabled, also add it to player
+        if (comptools_config.use_midi_input) {
+
+            // Go through the events and try to locate the note ON event
+            for (var k = 0; k < sf_midi_events.length; k++) {
+                // Found it, let's process it
+                if (sf_midi_events[k]["note"] === got_note) {
+
+                    if (comptools_config.quantize_enabled) {
+
+                        var the_note = sf_midi_events[k]["ref"];
+                        var before = sf_midi_events[k]["timestamp"];
+                        var duration_array = get_legato_duration((tst - before) / 1000);
+                        
+                        // First, set the duration of the original note
+                        the_note.setDuration(duration_array[0]);
+                        duration_array.splice(0,1);
+                        
+                        // If there are any notes left, then proceed...
+                        for (var l = 0; l < duration_array.length; l++) {
+                            add_sf_note_to_player_add_duration(the_note.elem_id,
+                                    duration_array[l]);
+                        }
+                    }
+
+                    // Event processed - remove
+                    sf_midi_events.splice(k, 1);
+                    break;
+                }
+            }
+        }
 
     };
 

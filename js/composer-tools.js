@@ -104,7 +104,9 @@ var chord_play_events = [];
 // Configuration object
 var comptools_config = {
     "tempo": 120,
-    "time_signature": "4/4",
+    "quantize_to": 4,           // Number of notes to quantize the duration to
+    "quantize_enabled": true,   // (the quantize feature is for MIDI input)
+    "time_signature": "4/4",    
     "play_sound": true,
     "play_midi": false,
     "use_midi_input": false,
@@ -2902,16 +2904,27 @@ comptoolsMIDIPlayer = function () {
     this.handleMIDIInput = function (event) {
         // Handle input only if option is enabled
         if (comptools_config.play_midi) {
+            
+            // Event timestamp
+            var my_timestamp = event.timeStamp;
+            
             // Parse the command, on "note on" message invoke the callback
             switch (event.data[0] & 0xf0) {
                 case 0x90:
-                    if (event.data[2] != 0) {  // if velocity != 0, this is a note-on message
-                        self.input_received_callback(
-                                from_semitone_distance(event.data[1] - 11));
+                    if (event.data[2] !== 0) {  // if velocity !== 0, this is a note-on message
+                        self.input_on_received_callback(
+                                from_semitone_distance(event.data[1] - 11), my_timestamp);
+                    }else if(event.data[2] === 0){
+                        // Run the previous note processor
+                        self.input_off_received_callback(
+                                from_semitone_distance(event.data[1] - 11), my_timestamp);
                     }
+                    break;
                 case 0x80:
-                    // Do nothing
-                    return;
+                    // Process the note off
+                    self.input_off_received_callback(
+                                from_semitone_distance(event.data[1] - 11), my_timestamp);
+                        break;
             }
         }
     };
@@ -2919,7 +2932,7 @@ comptoolsMIDIPlayer = function () {
     this.flushNoteBuffer = function () {
         this.sendOffMessage(this.note_buffer); // Stop playing notes
         this.note_buffer = []; // Remove all notes from buffer
-    }
+    };
 
     this.sendOffMessage = function (notes, velocity) {
 
@@ -2941,7 +2954,7 @@ comptoolsMIDIPlayer = function () {
         var output = this.midi.outputs.get(this.MIDI_current_output);
         output.send(noteOffArray);
 
-    }
+    };
 
     // Special function that first sends buffered off messages
     this.CyclicSendOnMessage = function (notes, velocity) {
@@ -3010,6 +3023,10 @@ comptoolsMIDIPlayer = function () {
 
 };
 
-comptoolsMIDIPlayer.prototype.input_received_callback = function () {
+comptoolsMIDIPlayer.prototype.input_on_received_callback = function () {
+    return null;
+};
+
+comptoolsMIDIPlayer.prototype.input_off_received_callback = function () {
     return null;
 };
