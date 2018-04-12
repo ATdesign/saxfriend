@@ -105,7 +105,7 @@ var chord_play_events = [];
 var comptools_config = {
     "tempo": 120,
     "quantize_to": 4,           // Number of notes to quantize the duration to
-    "quantize_enabled": true,   // (the quantize feature is for MIDI input)
+    "quantize_enabled": false,   // (the quantize feature is for MIDI input)
     "time_signature": "4/4",    
     "play_sound": true,
     "play_midi": false,
