@@ -111,7 +111,7 @@ var SF_MAJOR_SIXTH = 9;
 // Note list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
 var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"uk-input sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"sf-note-part-title\">Part: </span><select class=\"uk-select sf-note-list-parts\"><option>1</option></select> <span class=\"sf-note-part-add\">Add</span>|<span class=\"sf-note-part-duplicate\">Duplicate</span>|<span class=\"sf-note-part-remove\">Remove</span>|<span class=\"sf-note-part-import\">Import</span>|<span class=\"sf-note-part-export\">Export</span></div>";
-var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
+var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span> | <span class=\"sf-note-rest\">rest</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
 var SF_NOTE_LENGTHS = ["1/32", "1/24", "1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "1/2", "2/3", "1"];
 var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
 var SF_NOTE_LIST_ID = "sf-note-list";
@@ -368,7 +368,7 @@ function parse_sf_note_player() {
 
     // Go through all id's and find a selected note,
     // if any; defaults to first note
-    var my_elem, sf_note_selected = -1;
+    var sf_note_selected = -1;
     for (var k = 0; k < play_order_ids.length; k++) {
         if (d3.select('#' + SF_NOTE_LIST_ID + ' #'
                 + play_order_ids[k] + ' div.uk-card')
@@ -429,7 +429,8 @@ function parse_sf_note_player() {
             "note": current_sf_note.my_note,
             "duration": now_dur,
             "interval": now_dur,
-            "legato": do_legato
+            "legato": do_legato,
+            "rest": current_sf_note.is_rest
         };
 
         // Get sum of all durations
@@ -610,7 +611,7 @@ function AltoSaxChart() {
 // *********************************
 
 // The object
-function comptoolsSfNotePlayerElement(note, dur, leg)
+function comptoolsSfNotePlayerElement(note, dur, leg, rest)
 {
 
     // Check argument list
@@ -624,6 +625,11 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     if (typeof leg !== "undefined") {
         my_leg = leg;
     }
+    
+    var my_rest = false;
+    if (typeof rest !== "undefined") {
+        my_rest = rest;
+    }
 
     // Initialization 
     var self = this;
@@ -636,6 +642,9 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
     } else {
         my_note = note;
     }
+    
+    // Rests feature
+    this.is_rest = my_rest;
 
     this.my_note = my_note;
 
@@ -691,6 +700,18 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
             .on('click', function () {
                 self.legato = !self.legato;
                 d3.select(this).classed('selected', self.legato);
+                if (typeof comptools_config.sf_note_player !== "undefined") {
+                    comptools_config.sf_note_player.update_callback();
+                }
+            }
+            );
+    
+    // Rest
+    d3.select("#" + this.elem_id + ' .sf-note-rest')
+            .on('click', function () {
+                self.is_rest = !self.is_rest;
+                d3.select(this).classed('selected', self.is_rest);
+                self.updateNotation();
                 if (typeof comptools_config.sf_note_player !== "undefined") {
                     comptools_config.sf_note_player.update_callback();
                 }
@@ -793,8 +814,14 @@ function comptoolsSfNotePlayerElement(note, dur, leg)
                     // Do nothing
                     break;
             }
+            
+            // Check if this is a rest
+            if (this.is_rest){
+                new_note = "B/4";
+                my_dur += "r";
+            }
 
-            // Create an SVG renderer and attach it to the DIV element named "boo".
+            // Create an SVG renderer
             var div = document.getElementById(self.elem_id + "-canvas");
             div.innerHTML = "";
 
@@ -1103,8 +1130,8 @@ function comptoolsSfNotePlayer(player_class)
             this.current_note = null;
         }
 
-        // Start playing the note, if not legato
-        if (!current_event.legato) {
+        // Start playing the note, if not legato or rest
+        if (!current_event.legato && !current_event.rest) {
             // Play the notes
             player_play_sf_note(transpose_note(current_event.object.my_note,
                     -SF_MAJOR_SIXTH),
@@ -1279,7 +1306,8 @@ function comptoolsSfNotePlayer(player_class)
         for (k = 0; k < play_order_ids.length; k++) {
             var tc = sf_note_list.get_obj_by_prop('elem_id', play_order_ids[k]);
             text += tc.my_note + " " + tc.get_dur() + " "
-                    + (tc.legato ? " leg" : "") + "; ";
+                    + (tc.legato ? " leg" : "") + " "
+                    + (tc.is_rest ? " rest" : "") + "; ";
         }
 
         // Beautification
@@ -1329,18 +1357,23 @@ function comptoolsSfNotePlayer(player_class)
             if (note_elem.length === 2 || note_elem.length === 3) {
 
                 // Note and duration
-                var my_note = note_elem[0];
-                var my_dur = note_elem[1];
+                var my_note = note_elem[0].trim();
+                var my_dur = note_elem[1].trim();
 
                 // Determine whether this is a legato
                 var my_leg = false;
-                if (note_elem.length === 3 && note_elem[2] === 'leg') {
+                if (note_elem.length >= 3 && note_elem[2].trim() === 'leg') {
                     my_leg = true;
+                }
+                
+                var my_rest = false;
+                if (note_elem.length === 4 && note_elem[2].trim() === 'rest') {
+                    my_rest = true;
                 }
 
                 // Add the note to timeline
                 var add_note = new comptoolsSfNotePlayerElement(my_note,
-                        my_dur, my_leg);
+                        my_dur, my_leg, my_rest);
                 sf_note_list.push(add_note);
 
             } else
