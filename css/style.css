@@ -848,10 +848,7 @@ select.sf-note-list-parts {
   text-align: center;
   height: 40px;
   margin-bottom: 20px; }
-  .sf-note-player .sf-note-player-controls .chord-play {
-    border: 1px solid #fff;
-    margin: 5px;
-    padding: 5px;
+  .sf-note-player .sf-note-player-controls .sf-note-play, .sf-note-player .sf-note-player-controls .sf-note-record {
     cursor: pointer;
     -webkit-touch-callout: none;
     /* iOS Safari */
@@ -865,7 +862,15 @@ select.sf-note-list-parts {
     /* Internet Explorer/Edge */
     user-select: none;
     /* Non-prefixed version, currently
-       supported by Chrome and Opera */ }
+       supported by Chrome and Opera */
+    margin: 5px;
+    padding: 5px; }
+  .sf-note-player .sf-note-player-controls .sf-note-record.enabled {
+    cursor: pointer;
+    color: #000; }
+  .sf-note-player .sf-note-player-controls .sf-note-record.disabled {
+    cursor: default;
+    color: #aaa; }
   .sf-note-player .sf-note-player-controls .import-sf-note-list, .sf-note-player .sf-note-player-controls .export-sf-note-list {
     margin: 5px;
     padding: 5px;
@@ -885,7 +890,8 @@ select.sf-note-list-parts {
        supported by Chrome and Opera */ }
   .sf-note-player .sf-note-player-controls .import-sf-note-list {
     padding-left: 10px; }
-  .sf-note-player .sf-note-player-controls .sf-note-play.selected {
+  .sf-note-player .sf-note-player-controls .sf-note-play.selected,
+  .sf-note-player .sf-note-player-controls .sf-note-record.selected {
     border: 1px solid #d20050; }
   .sf-note-player .sf-note-player-controls .sf-note-bpm {
     width: 50px; }

@@ -110,7 +110,7 @@ var SF_MAJOR_SIXTH = 9;
 
 // Note list item specific
 var SF_NOTE_LIST_TEMPLATE = "<ul id=\"sf-note-list\" class=\"uk-grid-small uk-child-width-1-3 uk-child-width-1-4@s uk-text-center\" uk-sortable=\"handle: .uk-sortable-handle\" uk-grid></ul>";
-var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> @ <input class=\"uk-input sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"sf-note-part-title\">Part: </span><select class=\"uk-select sf-note-list-parts\"><option>1</option></select> <span class=\"sf-note-part-add\">Add</span>|<span class=\"sf-note-part-duplicate\">Duplicate</span>|<span class=\"sf-note-part-remove\">Remove</span>|<span class=\"sf-note-part-import\">Import</span>|<span class=\"sf-note-part-export\">Export</span></div>";
+var SF_NOTE_LIST_CONTROL_TEMPLATE = "<div class=\"sf-note-player-controls\"><span class=\"sf-note-play\">Play</span> | <span class=\"sf-note-record\">Record</span> @ <input class=\"uk-input sf-note-bpm\" type=\"text\" value=\"{{sf-note-bpm}}\"> bpm <span class=\"sf-note-part-title\">Part: </span><select class=\"uk-select sf-note-list-parts\"><option>1</option></select> <span class=\"sf-note-part-add\">Add</span>|<span class=\"sf-note-part-duplicate\">Duplicate</span>|<span class=\"sf-note-part-remove\">Remove</span>|<span class=\"sf-note-part-import\">Import</span>|<span class=\"sf-note-part-export\">Export</span></div>";
 var SF_NOTE_LIST_ITEM_TEMPLATE = "<div class=\"uk-card uk-card-default uk-card-body\"><div class=\"sf-note-header\"><span class=\"uk-sortable-handle\" uk-icon=\"icon: table\"></span> <span class=\"sf-note-text\">(alto sax) {{sf-note-text}}</span> | <span class=\"sf-note-legato\">leg.</span> | <span class=\"sf-note-rest\">rest</span><br /></div><div class=\"sf-note-canvas\"></div><div class=\"sf-note-option sf-note-length\"><span class=\"sf-note-option-label\">Length:</span><span class=\"sf-note-controls sf-note-reduce-value\" uk-icon=\"icon: minus-circle;\"></span><input type=\"text\" class=\"sf-note-text-input\" value=\"{{sf-note-length}}\" /><span class=\"sf-note-controls sf-note-add-value\" uk-icon=\"icon: plus-circle;\"></span></div><div class=\"sf-note-option sf-note-actions\"><span class=\"sf-note-controls sf-note-duplicate\">duplicate</span> | <span class=\"sf-note-controls sf-note-delete\">delete</span></div></div>";
 var SF_NOTE_LENGTHS = ["1/32", "1/24", "1/16", "1/12", "1/8", "1/6", "1/4", "1/3", "1/2", "2/3", "1"];
 var SF_NOTE_PLAYER_CLASS = 'sf-note-player';
@@ -268,13 +268,14 @@ function add_sf_note_to_player(note, dur) {
     return my_note;
 }
 
-function add_sf_note_to_player_after_id(the_id, note, dur, leg) {
+// Add specified note to player after id (not counting legatos)
+function add_sf_note_to_player_after_id(the_id, note, dur, leg, rest) {
 
     var the_ind = sf_note_list
             .indexOf(sf_note_list.get_obj_by_prop('elem_id', the_id));
     // Check index
     if (the_ind !== -1) {
-        var my_note = new comptoolsSfNotePlayerElement(note, dur, leg);
+        var my_note = new comptoolsSfNotePlayerElement(note, dur, leg, rest);
         sf_note_list.splice(the_ind, 0, my_note);
 
         if (typeof comptools_config.instrument_glue !== "undefined") {
@@ -297,7 +298,19 @@ function add_sf_note_to_player_after_id(the_id, note, dur, leg) {
 }
 
 // This will add a legato note of specified duration to the given note
-function add_sf_note_to_player_add_duration(the_id, dur) {
+function add_sf_note_to_player_add_duration(the_id, dur, rest) {
+
+    var the_pn = sf_note_list.get_obj_by_prop('elem_id', the_id);
+    if (sf_note_list.indexOf(the_pn) !== -1) {
+        var this_note = the_pn.my_note;
+    }
+
+    return add_sf_note_to_player_after_id_and_legato(the_id, this_note, dur, true, rest);
+
+}
+
+// This will add a legato note of specified duration to the given note
+function add_sf_note_to_player_after_id_and_legato(the_id, note, dur, leg, rest) {
 
     var the_pn = sf_note_list.get_obj_by_prop('elem_id', the_id);
     var the_ind = sf_note_list.indexOf(the_pn);
@@ -319,7 +332,7 @@ function add_sf_note_to_player_add_duration(the_id, dur) {
 
     // Get the index of the last note in legato sequence
     var the_new_id = sf_note_list[to_add_ind].elem_id;
-    return add_sf_note_to_player_after_id(the_new_id, this_note, dur, true);
+    return add_sf_note_to_player_after_id(the_new_id, note, dur, leg, rest);
 
 }
 
@@ -625,7 +638,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
     if (typeof leg !== "undefined") {
         my_leg = leg;
     }
-    
+
     var my_rest = false;
     if (typeof rest !== "undefined") {
         my_rest = rest;
@@ -642,7 +655,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
     } else {
         my_note = note;
     }
-    
+
     // Rests feature
     this.is_rest = my_rest;
 
@@ -693,6 +706,10 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
     d3.select("#" + this.elem_id + ' .sf-note-legato')
             .classed('selected', this.legato);
 
+    // Set up rest
+    d3.select("#" + this.elem_id + ' .sf-note-rest')
+            .classed('selected', this.is_rest);
+
     // Assign actions
 
     // Legato
@@ -705,7 +722,7 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
                 }
             }
             );
-    
+
     // Rest
     d3.select("#" + this.elem_id + ' .sf-note-rest')
             .on('click', function () {
@@ -814,9 +831,9 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
                     // Do nothing
                     break;
             }
-            
+
             // Check if this is a rest
-            if (this.is_rest){
+            if (this.is_rest) {
                 new_note = "B/4";
                 my_dur += "r";
             }
@@ -906,11 +923,11 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
         self.updateNotation();
 
     };
-    
-     // Set duration
-    this.setDuration = function(dur){
-       this.duration_index = SF_NOTE_LENGTHS.indexOf(dur);
-       d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
+
+    // Set duration
+    this.setDuration = function (dur) {
+        this.duration_index = SF_NOTE_LENGTHS.indexOf(dur);
+        d3.select('#' + this.elem_id + ' .sf-note-length .sf-note-text-input')
                 .attr('value', dur);
         sf_note_last_duration = dur;
         self.updateNotation();
@@ -991,6 +1008,7 @@ function comptoolsSfNotePlayer(player_class)
     var self = this;
 
     this.playing = false;           // Player state
+    this.recording = false;         // Recording state
     this.current_event_index = 0;   // Event index for the scheduler
     this.current_note = null;       // Currently selected note element
 
@@ -1018,6 +1036,10 @@ function comptoolsSfNotePlayer(player_class)
         self.togglePlay();
     });
 
+    d3.select(player_class + ' .sf-note-record').on('click', function () {
+        self.toggleRecord();
+    });
+
     // Pressing the space bar has the same effect
     // Bind a keyboard event as well
     Mousetrap.bind("space", function (e) {
@@ -1033,6 +1055,16 @@ function comptoolsSfNotePlayer(player_class)
 
     // Event: begin play
     this.togglePlay = function () {
+
+        // Play/record are mutually exclusive
+        if (this.recording) {
+            return;
+        }
+
+        // Do not play if there is nothing TO play
+        if (sf_note_list.length === 0) {
+            return;
+        }
 
         // Toggle play state
         this.playing = !this.playing;
@@ -1104,6 +1136,54 @@ function comptoolsSfNotePlayer(player_class)
         // Start transport
         Tone.Transport.start();
 
+    };
+
+    this.toggleRecord = function () {
+
+        // Play/record are mutually exclusive
+        if (this.playing) {
+            return;
+        }
+
+        // Check if MIDI is available and MIDI input is enabled
+        if (typeof comptools_midi_player === "undefined" ||
+                !comptools_midi_player.ready ||
+                !comptools_config.use_midi_input) {
+            // Issue message to the user that MIDI
+            // is not used so recording is not possible
+            UIkit.modal.alert("MIDI input is either not available or disabled. Please check your settings.");
+            return;
+        }
+
+        // Check for action first
+        var my_state = this.recording;
+
+        // Toggle record state
+        this.recording = !this.recording;
+        d3.select(player_class + ' .sf-note-record')
+                .classed('selected', this.recording);
+        ;
+        
+        // Depending on the state, do the thing
+        if (my_state){
+            // Was recording, now go and process duration data
+            this.process_recorded_duration();
+        }else{
+            // Was not recording, clear the MIDI event list and proceed
+            sf_midi_events = [];
+        }
+
+    };
+    
+    // Go around recorded notes and set correct duration thereof
+    this.process_recorded_duration = function() {
+        
+        for (var k=0; k<sf_midi_events.length; k++){
+            
+            // If this is not the last note, see if a rest must be placed
+            // between the two notes in sequence
+        }
+        
     };
 
     this.process_events = function () {
@@ -1354,7 +1434,12 @@ function comptoolsSfNotePlayer(player_class)
             var note_elem = this_note.split(" ");
 
             // Parse depending on the length
-            if (note_elem.length === 2 || note_elem.length === 3) {
+            if (note_elem.length === 2 || note_elem.length === 3 || note_elem.length === 4) {
+
+                // Remove extra whitespace
+                for (var l = 0; l < note_elem.length; l++) {
+                    note_elem[l] = note_elem[l].trim();
+                }
 
                 // Note and duration
                 var my_note = note_elem[0].trim();
@@ -1362,12 +1447,13 @@ function comptoolsSfNotePlayer(player_class)
 
                 // Determine whether this is a legato
                 var my_leg = false;
-                if (note_elem.length >= 3 && note_elem[2].trim() === 'leg') {
+                if (note_elem.indexOf('leg') !== -1) {
                     my_leg = true;
                 }
-                
+
+                // Or if there is a rest
                 var my_rest = false;
-                if (note_elem.length === 4 && note_elem[2].trim() === 'rest') {
+                if (note_elem.indexOf('rest') !== -1) {
                     my_rest = true;
                 }
 
@@ -1450,13 +1536,13 @@ function InstrumentGlueSax() {
         // And push duration into the special buffer
         if (comptools_config.use_midi_input) {
             var objref = add_sf_note_to_player(got_note, sf_note_last_duration);
-            
+
             // Push the event into the buffer
-            if (comptools_config.quantize_enabled) {
+            if (comptools_config.note_player.recording) {
                 sf_midi_events.push(
                         {"ref": objref,
                             "note": got_note,
-                            "timestamp": tst}
+                            "timestamp_on": tst}
                 );
             }
         }
@@ -1468,32 +1554,16 @@ function InstrumentGlueSax() {
 
         // Look for the ON note in the events list
         // If MIDI input is enabled, also add it to player
-        if (comptools_config.use_midi_input) {
+        if (comptools_config.use_midi_input &&
+                comptools_config.note_player.recording) {
 
             // Go through the events and try to locate the note ON event
             for (var k = 0; k < sf_midi_events.length; k++) {
                 // Found it, let's process it
                 if (sf_midi_events[k]["note"] === got_note) {
-
-                    if (comptools_config.quantize_enabled) {
-
-                        var the_note = sf_midi_events[k]["ref"];
-                        var before = sf_midi_events[k]["timestamp"];
-                        var duration_array = get_legato_duration((tst - before) / 1000);
-                        
-                        // First, set the duration of the original note
-                        the_note.setDuration(duration_array[0]);
-                        duration_array.splice(0,1);
-                        
-                        // If there are any notes left, then proceed...
-                        for (var l = 0; l < duration_array.length; l++) {
-                            add_sf_note_to_player_add_duration(the_note.elem_id,
-                                    duration_array[l]);
-                        }
-                    }
-
-                    // Event processed - remove
-                    sf_midi_events.splice(k, 1);
+                    
+                    // Save the timestamp
+                    sf_midi_events[k]["timestamp_off"] = tst;
                     break;
                 }
             }

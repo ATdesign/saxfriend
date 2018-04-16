@@ -105,7 +105,6 @@ var chord_play_events = [];
 var comptools_config = {
     "tempo": 120,
     "quantize_to": 4,           // Number of notes to quantize the duration to
-    "quantize_enabled": false,   // (the quantize feature is for MIDI input)
     "time_signature": "4/4",    
     "play_sound": true,
     "play_midi": false,
@@ -113,7 +112,8 @@ var comptools_config = {
     "instrument_glue": null, // Reference to instrument glue
     "theory": null, // Reference to theory
     "chord_player": null, // Reference to chord player
-    "chord_builder": null // Reference to chord builder
+    "chord_builder": null, // Reference to chord builder
+    "note_player": null // Reference to note player
 };
 
 // Helper functions

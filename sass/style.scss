@@ -1,12 +1,12 @@
 /* Global mixins */
 @mixin noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome and Opera */
 }
 
 
@@ -24,12 +24,12 @@ div.all-container ul li h3{
 }
 
 div.fretboard{
-	display: block;
-	margin: auto;
-        /*margin-top: 10px;*/
-	width: 720px;
-	height: 180px;
-	background: #eee;
+    display: block;
+    margin: auto;
+    /*margin-top: 10px;*/
+    width: 720px;
+    height: 180px;
+    background: #eee;
 }
 
 div.keyboard{
@@ -53,7 +53,7 @@ div.theory{
 /* Chord progressions chart */
 div.chord-progressions{
     width: 100%;
-    
+
     svg text{
         font-family: 'Fira Sans', sans;
     }
@@ -107,30 +107,30 @@ div.chord-player{
 }
 
 @for $i from 1 through 8 {
-#clef-s#{$i},
-#clef-f#{$i},
-#clefb-s#{$i},
-#clefb-f#{$i}{
-    opacity: 0;
-}
+    #clef-s#{$i},
+    #clef-f#{$i},
+    #clefb-s#{$i},
+    #clefb-f#{$i}{
+        opacity: 0;
+    }
 }
 
 @for $i from 1 through 8 {
-#noterel-#{$i} text{
-  font-size: 3px !important;
-  font-family: "Fira Sans", sans;
-}
+    #noterel-#{$i} text{
+        font-size: 3px !important;
+        font-family: "Fira Sans", sans;
+    }
 }
 
 
 /* TODO: Not a beautiful solution at all... */
 @for $i from 1 through 8 {
-#clef-s#{$i}.visible-accidental,
-#clef-f#{$i}.visible-accidental,
-#clefb-s#{$i}.visible-accidental,
-#clefb-f#{$i}.visible-accidental{
-    opacity: 1;
-}
+    #clef-s#{$i}.visible-accidental,
+    #clef-f#{$i}.visible-accidental,
+    #clefb-s#{$i}.visible-accidental,
+    #clefb-f#{$i}.visible-accidental{
+        opacity: 1;
+    }
 }
 
 .circle-scale{
@@ -149,18 +149,18 @@ div.chord-player{
 }
 
 div.fretboard-bass{
-	display: block;
-	margin: auto;
-        /*margin-top: 10px;*/
-	width: 720px;
-	height: 140px;
-	background: #eee;
+    display: block;
+    margin: auto;
+    /*margin-top: 10px;*/
+    width: 720px;
+    height: 140px;
+    background: #eee;
 }
 
 .fretboard-default{
-	fill: #3e2119;
-	stroke: #eee;
-	storke-width: 2px;
+    fill: #3e2119;
+    stroke: #eee;
+    storke-width: 2px;
 }
 
 .fretboard-default .fretboard-shadow-default{
@@ -168,9 +168,9 @@ div.fretboard-bass{
 }
 
 .fretboard-bass{
-    	fill: #111;
-	stroke: #eee;
-	storke-width: 2px;
+    fill: #111;
+    stroke: #eee;
+    storke-width: 2px;
 }
 
 .fretboard-bass .fretboard-shadow-default{
@@ -186,36 +186,36 @@ div.fretboard-bass{
 }
 
 .fretboard-marker-default {
-  fill: #eee;
-  stroke: #555;
-  cursor: pointer;
-  @include noselect;
-  }
+    fill: #eee;
+    stroke: #555;
+    cursor: pointer;
+    @include noselect;
+}
 
- .keyboard-marker-inactive{
-      opacity: 0;
-  }
-  
-  
- .keyboard-marker-selected, .keyboard-marker-highlighted{
-     opacity: 1;
-  }
-  
-  .keyboard-marker-selected{
-     stroke: #d12c00;
-     stroke-width: 2px;
-  }
-  
+.keyboard-marker-inactive{
+    opacity: 0;
+}
+
+
+.keyboard-marker-selected, .keyboard-marker-highlighted{
+    opacity: 1;
+}
+
+.keyboard-marker-selected{
+    stroke: #d12c00;
+    stroke-width: 2px;
+}
+
 .keyboard-marker-highlighted.keyboard-marker-highlighted-root{
     fill: #ffa8c8;
 }
-  
+
 .fretboard-marker-inactive{
-	opacity: 0;
+    opacity: 0;
 }
 
 .fretboard-marker-selected, .fretboard-marker-highlighted{
-	opacity: 1;
+    opacity: 1;
 }
 
 .chordbuild-marker, .chordbuild-add, .chordbuild-chord{
@@ -246,10 +246,10 @@ div.fretboard-bass{
 }
 
 .fretboard-marker-default text{
-  fill: #555;
-  stroke: none;
-  font-size: 10px;
-  font-family: "Fira Sans", sans;
+    fill: #555;
+    stroke: none;
+    font-size: 10px;
+    font-family: "Fira Sans", sans;
 }
 
 .fretboard-marker-highlighted{
@@ -257,8 +257,8 @@ div.fretboard-bass{
 }
 
 .fretboard-marker-selected rect{
-     stroke: #d12c00;
-     stroke-width: 2px;
+    stroke: #d12c00;
+    stroke-width: 2px;
 }
 
 .fretboard-marker-highlighted.fretboard-marker-highlighted-root{
@@ -276,9 +276,9 @@ div.fretboard-bass{
 }
 
 .fretboard-nut-default{
-	fill: #7C5B53;
-	stroke: #eee;
-	storke-width: 2px;
+    fill: #7C5B53;
+    stroke: #eee;
+    storke-width: 2px;
 }
 
 .fretboard-nut-bass{
@@ -288,7 +288,7 @@ div.fretboard-bass{
 }
 
 .fret-dot-default{
-	fill: #fff;
+    fill: #fff;
 }
 
 .fret-string{
@@ -307,7 +307,7 @@ div.fretboard-bass{
     span.chord-text{
         font-size: 0.8em;
     }
-    
+
     span.btn-delete{
         color: red;
     }
@@ -357,7 +357,7 @@ div.fretboard-bass{
         cursor: pointer;
         @include noselect;
     }
-    
+
     .chord-delete{
         color: red;
     }
@@ -428,7 +428,7 @@ div.fretboard-bass{
     display: block;
     margin-top: 0px;
     margin-bottom: 20px;
-    
+
     svg line{
         stroke: #666;
         stroke-width: 2px;
@@ -515,7 +515,7 @@ div.fretboard-bass{
         cursor: pointer;
         @include noselect;
     }
-    
+
 }
 
 /**************
@@ -552,7 +552,7 @@ select.sf-note-list-parts{
     span.sf-note-text{
         font-size: 0.8em;
     }
-    
+
     span.btn-delete{
         color: red;
     }
@@ -611,7 +611,7 @@ select.sf-note-list-parts{
         cursor: pointer;
         @include noselect;
     }
-    
+
     .sf-note-delete{
         color: red;
     }
@@ -646,27 +646,40 @@ select.sf-note-list-parts{
     text-align: center;
     height: 40px;
     margin-bottom: 20px;
-    .chord-play{
-        border: 1px solid #fff;
-        margin: 5px;
-        padding: 5px;
+
+    .sf-note-play, .sf-note-record{
         cursor: pointer;
         @include noselect;
+        margin: 5px;
+        padding: 5px;
     }
+    
+    .sf-note-record.enabled{
+        cursor: pointer;
+        color: #000;
+    }
+    
+    .sf-note-record.disabled{
+        cursor: default;
+        color: #aaa;
+    }
+
     .import-sf-note-list, .export-sf-note-list{
         margin: 5px;
         padding: 5px;
         cursor: pointer;
         @include noselect;
     }
-    
+
     .import-sf-note-list{
         padding-left: 10px;
     }
-    
-    .sf-note-play.selected{
+
+    .sf-note-play.selected,
+    .sf-note-record.selected{
         border: 1px solid #d20050;
     }
+    
     .sf-note-bpm{
         width: 50px;
     }
