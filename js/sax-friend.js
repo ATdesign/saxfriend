@@ -206,6 +206,14 @@ function draw_alto_fingering(note, cc) {
     }
 }
 
+// Shortest note duration in seconds
+function get_shortest_dur() {
+    if (typeof comptools_config !== "undefined") {
+        return eval(SF_NOTE_LENGTHS[0]) * (240 / comptools_config.tempo);
+    }
+
+}
+
 // Return duration in terms of notes in current tempo
 function get_legato_duration(time_seconds) {
     // Only works if correct options are defined
@@ -1163,27 +1171,63 @@ function comptoolsSfNotePlayer(player_class)
         d3.select(player_class + ' .sf-note-record')
                 .classed('selected', this.recording);
         ;
-        
+
         // Depending on the state, do the thing
-        if (my_state){
+        if (my_state) {
             // Was recording, now go and process duration data
             this.process_recorded_duration();
-        }else{
+        } else {
             // Was not recording, clear the MIDI event list and proceed
             sf_midi_events = [];
         }
 
     };
-    
+
     // Go around recorded notes and set correct duration thereof
-    this.process_recorded_duration = function() {
-        
-        for (var k=0; k<sf_midi_events.length; k++){
-            
+    this.process_recorded_duration = function () {
+
+        for (var k = 0; k < sf_midi_events.length; k++) {
+
+            console.log(sf_midi_events[k]);
+            var my_note = sf_midi_events[k]["ref"];
+
+            // Total duration in seconds
+            var total_dur = (sf_midi_events[k]["timestamp_off"] -
+                    sf_midi_events[k]["timestamp_off"]) / 1000;
+
+            var dur_array = get_legato_duration(total_dur);
+
+            // Original note duration
+            my_note.setDuration(dur_array[0]);
+            dur_array.splice(0, 1);
+
+            // Process the durations
+            for (var l = 0; l < dur_array.length; l++) {
+                add_sf_note_to_player_add_duration(my_note.elem_id,
+                        dur_array[l], false);
+            }
+
             // If this is not the last note, see if a rest must be placed
-            // between the two notes in sequence
+            // between the two notes in sequence if it is long enough
+            if (k < sf_midi_events.length - 1) {
+                var rest_dur = (sf_midi_events[k + 1]["timestamp_on"] -
+                        sf_midi_events[k]["timestamp_off"]) / 1000;
+
+                // Only add rest if necessary
+                if (rest_dur > get_shortest_dur()) {
+                    var rest_arr = get_legato_duration(rest_dur);
+                    var the_rest = add_sf_note_to_player_after_id_and_legato(
+                            my_note.elem_id, "B2", rest_arr[0], false, true);
+
+                    rest_arr.splice(0, 1);
+                    for (var l = 0; l < rest_arr.length; l++) {
+                        add_sf_note_to_player_add_duration(the_rest.elem_id,
+                                rest_arr[l], true);
+                    }
+                }
+            }
         }
-        
+
     };
 
     this.process_events = function () {
@@ -1561,7 +1605,7 @@ function InstrumentGlueSax() {
             for (var k = 0; k < sf_midi_events.length; k++) {
                 // Found it, let's process it
                 if (sf_midi_events[k]["note"] === got_note) {
-                    
+
                     // Save the timestamp
                     sf_midi_events[k]["timestamp_off"] = tst;
                     break;
@@ -1582,7 +1626,6 @@ function InstrumentGlueSax() {
                 the_note = transpose_note(the_note, 12);
             }
 
-            console.log(dist);
             // If last note, transpose +12 from root
             if (dist === 8) {
                 the_note = transpose_note(my_root, 12);
