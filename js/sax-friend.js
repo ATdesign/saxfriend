@@ -283,7 +283,7 @@ function add_sf_note_to_player_after_id(the_id, note, dur, leg, rest) {
             .indexOf(sf_note_list.get_obj_by_prop('elem_id', the_id));
     // Check index
     if (the_ind !== -1) {
-        var my_note = new comptoolsSfNotePlayerElement(note, dur, leg, rest);
+        var my_note = new comptoolsSfNotePlayerElement(note, dur, leg, rest, the_id);
         sf_note_list.splice(the_ind, 0, my_note);
 
         if (typeof comptools_config.instrument_glue !== "undefined") {
@@ -632,7 +632,7 @@ function AltoSaxChart() {
 // *********************************
 
 // The object
-function comptoolsSfNotePlayerElement(note, dur, leg, rest)
+function comptoolsSfNotePlayerElement(note, dur, leg, rest, afterid)
 {
 
     // Check argument list
@@ -650,6 +650,11 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
     var my_rest = false;
     if (typeof rest !== "undefined") {
         my_rest = rest;
+    }
+
+    var old_id = "";
+    if (typeof afterid !== "undefined"){
+        old_id = afterid;
     }
 
     // Initialization 
@@ -701,10 +706,22 @@ function comptoolsSfNotePlayerElement(note, dur, leg, rest)
 
     // Add to DOM
     var sf_note_list_elem = d3.select("#" + SF_NOTE_LIST_ID);
-    this.list_elem = sf_note_list_elem.append('li')
+    
+    // Should we insert after a particular ID?
+    if (old_id === ""){
+        this.list_elem = sf_note_list_elem.append('li')
             .attr('class', SF_NOTE_LIST_ITEM_CLASS)
             .attr('id', this.elem_id)
             .html(my_sf_note_elem);
+    }else
+    {
+        this.list_elem = sf_note_list_elem.insert('li', '#'+old_id+" + *")
+                .attr('class', SF_NOTE_LIST_ITEM_CLASS)
+                .attr('id', this.elem_id)
+                .html(my_sf_note_elem);
+    }
+    
+    
 
     // Add also ID to canvas
     d3.select("#" + this.elem_id + " .sf-note-canvas")
@@ -1188,12 +1205,11 @@ function comptoolsSfNotePlayer(player_class)
 
         for (var k = 0; k < sf_midi_events.length; k++) {
 
-            console.log(sf_midi_events[k]);
             var my_note = sf_midi_events[k]["ref"];
 
             // Total duration in seconds
             var total_dur = (sf_midi_events[k]["timestamp_off"] -
-                    sf_midi_events[k]["timestamp_off"]) / 1000;
+                    sf_midi_events[k]["timestamp_on"]) / 1000;
 
             var dur_array = get_legato_duration(total_dur);
 
@@ -1217,7 +1233,7 @@ function comptoolsSfNotePlayer(player_class)
                 if (rest_dur > get_shortest_dur()) {
                     var rest_arr = get_legato_duration(rest_dur);
                     var the_rest = add_sf_note_to_player_after_id_and_legato(
-                            my_note.elem_id, "B2", rest_arr[0], false, true);
+                            my_note.elem_id, "B4", rest_arr[0], false, true);
 
                     rest_arr.splice(0, 1);
                     for (var l = 0; l < rest_arr.length; l++) {
