@@ -337,7 +337,7 @@ function add_sf_note_to_player_after_id_and_legato(the_id, note, dur, leg, rest)
             }
         }
     }
-
+    console.log('For note ' + this_note + ' I got add_ind ' + to_add_ind);
     // Get the index of the last note in legato sequence
     var the_new_id = sf_note_list[to_add_ind].elem_id;
     return add_sf_note_to_player_after_id(the_new_id, note, dur, leg, rest);
@@ -1179,6 +1179,13 @@ function comptoolsSfNotePlayer(player_class)
             UIkit.modal.alert("MIDI input is either not available or disabled. Please check your settings.");
             return;
         }
+        
+        // Get tempo
+        var now_tempo = d3.select(player_class + ' .sf-note-bpm')
+                .property('value');
+        if (typeof comptools_config.tempo !== "undefined") {
+            comptools_config.tempo = parseInt(now_tempo);
+        }
 
         // Check for action first
         var my_state = this.recording;
@@ -1210,16 +1217,17 @@ function comptoolsSfNotePlayer(player_class)
             // Total duration in seconds
             var total_dur = (sf_midi_events[k]["timestamp_off"] -
                     sf_midi_events[k]["timestamp_on"]) / 1000;
-
+            
             var dur_array = get_legato_duration(total_dur);
 
             // Original note duration
             my_note.setDuration(dur_array[0]);
             dur_array.splice(0, 1);
 
-            // Process the durations
+            // Process the durations (if any)
+            var last_note = my_note;
             for (var l = 0; l < dur_array.length; l++) {
-                add_sf_note_to_player_add_duration(my_note.elem_id,
+                 last_note = add_sf_note_to_player_add_duration(my_note.elem_id,
                         dur_array[l], false);
             }
 
@@ -1233,7 +1241,7 @@ function comptoolsSfNotePlayer(player_class)
                 if (rest_dur > get_shortest_dur()) {
                     var rest_arr = get_legato_duration(rest_dur);
                     var the_rest = add_sf_note_to_player_after_id_and_legato(
-                            my_note.elem_id, "B4", rest_arr[0], false, true);
+                            last_note.elem_id, "B4", rest_arr[0], false, true);
 
                     rest_arr.splice(0, 1);
                     for (var l = 0; l < rest_arr.length; l++) {
@@ -1602,7 +1610,8 @@ function InstrumentGlueSax() {
                 sf_midi_events.push(
                         {"ref": objref,
                             "note": got_note,
-                            "timestamp_on": tst}
+                            "timestamp_on": tst,
+                            "timestamp_off": -1}
                 );
             }
         }
@@ -1620,7 +1629,8 @@ function InstrumentGlueSax() {
             // Go through the events and try to locate the note ON event
             for (var k = 0; k < sf_midi_events.length; k++) {
                 // Found it, let's process it
-                if (sf_midi_events[k]["note"] === got_note) {
+                if (sf_midi_events[k]["note"] === got_note && 
+                        sf_midi_events[k]["timestamp_off"] === -1) {
 
                     // Save the timestamp
                     sf_midi_events[k]["timestamp_off"] = tst;
