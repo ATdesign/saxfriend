@@ -337,7 +337,6 @@ function add_sf_note_to_player_after_id_and_legato(the_id, note, dur, leg, rest)
             }
         }
     }
-    console.log('For note ' + this_note + ' I got add_ind ' + to_add_ind);
     // Get the index of the last note in legato sequence
     var the_new_id = sf_note_list[to_add_ind].elem_id;
     return add_sf_note_to_player_after_id(the_new_id, note, dur, leg, rest);
