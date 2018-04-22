@@ -15,16 +15,14 @@ div.fretboard {
   margin: auto;
   /*margin-top: 10px;*/
   width: 720px;
-  height: 180px;
-  background: #eee; }
+  height: 180px; }
 
 div.keyboard {
   display: block;
   margin: auto;
   /*margin-top: 10px;*/
   width: 720px;
-  height: 120px;
-  background: #eee; }
+  height: 120px; }
 
 div.theory {
   display: block;
@@ -250,8 +248,7 @@ div.fretboard-bass {
   margin: auto;
   /*margin-top: 10px;*/
   width: 720px;
-  height: 140px;
-  background: #eee; }
+  height: 140px; }
 
 .fretboard-default {
   fill: #3e2119;
@@ -318,6 +315,10 @@ div.fretboard-bass {
 
 .keyboard-marker-highlighted.keyboard-marker-highlighted-root {
   fill: #ffa8c8; }
+
+.keyboard-textline-text {
+  font-size: 12pt;
+  font-weight: bold; }
 
 .fretboard-marker-inactive {
   opacity: 0; }

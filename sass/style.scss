@@ -29,7 +29,6 @@ div.fretboard{
     /*margin-top: 10px;*/
     width: 720px;
     height: 180px;
-    background: #eee;
 }
 
 div.keyboard{
@@ -38,7 +37,6 @@ div.keyboard{
     /*margin-top: 10px;*/
     width: 720px;
     height: 120px;
-    background: #eee;
 }
 
 div.theory{
@@ -154,7 +152,6 @@ div.fretboard-bass{
     /*margin-top: 10px;*/
     width: 720px;
     height: 140px;
-    background: #eee;
 }
 
 .fretboard-default{
@@ -208,6 +205,11 @@ div.fretboard-bass{
 
 .keyboard-marker-highlighted.keyboard-marker-highlighted-root{
     fill: #ffa8c8;
+}
+
+.keyboard-textline-text{
+    font-size: 12pt;
+    font-weight: bold;
 }
 
 .fretboard-marker-inactive{
