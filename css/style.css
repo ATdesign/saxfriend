@@ -476,7 +476,7 @@ div.fretboard-bass {
   .chord-option .chord-delete {
     color: red; }
 
-.chord-legato {
+.chord-sustain {
   font-size: 0.8em;
   border: 1px solid #fff;
   cursor: pointer;
@@ -495,7 +495,7 @@ div.fretboard-bass {
      supported by Chrome and Opera */
   padding: 3px; }
 
-.chord-legato.selected {
+.chord-sustain.selected {
   border: 1px solid #666; }
 
 .chord-player .chord-player-controls {
@@ -822,7 +822,7 @@ select.sf-note-list-parts {
   /* Non-prefixed version, currently
      supported by Chrome and Opera */ }
 
-.sf-note-legato, .sf-note-rest {
+.sf-note-sustain, .sf-note-rest {
   font-size: 0.8em;
   border: 1px solid #fff;
   cursor: pointer;
@@ -841,7 +841,7 @@ select.sf-note-list-parts {
      supported by Chrome and Opera */
   padding: 3px; }
 
-.sf-note-legato.selected, .sf-note-rest.selected {
+.sf-note-sustain.selected, .sf-note-rest.selected {
   border: 1px solid #666; }
 
 .sf-note-player .sf-note-player-controls {

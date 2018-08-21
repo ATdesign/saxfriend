@@ -365,7 +365,7 @@ div.fretboard-bass{
     }
 }
 
-.chord-legato{
+.chord-sustain{
     font-size: 0.8em;
     border: 1px solid #fff;
     cursor: pointer;
@@ -373,7 +373,7 @@ div.fretboard-bass{
     padding: 3px;
 }
 
-.chord-legato.selected{
+.chord-sustain.selected{
     border: 1px solid #666;
 }
 
@@ -631,7 +631,7 @@ select.sf-note-list-parts{
     @include noselect;
 }
 
-.sf-note-legato, .sf-note-rest{
+.sf-note-sustain, .sf-note-rest{
     font-size: 0.8em;
     border: 1px solid #fff;
     cursor: pointer;
@@ -639,7 +639,7 @@ select.sf-note-list-parts{
     padding: 3px;
 }
 
-.sf-note-legato.selected, .sf-note-rest.selected{
+.sf-note-sustain.selected, .sf-note-rest.selected{
     border: 1px solid #666;
 }
 
