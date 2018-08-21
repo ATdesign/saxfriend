@@ -376,6 +376,15 @@ function player_play_sf_note(note, len) {
 }
 ;
 
+function player_stop_sf_midi_note() {
+
+    if (typeof comptools_midi_player !== "undefined" &&
+            comptools_midi_player.ready && comptools_config.play_midi) {
+        comptools_midi_player.SendBufferedOffMessages();
+    }
+}
+;
+
 // Parse the sf note player
 function parse_sf_note_player() {
 
@@ -458,7 +467,7 @@ function parse_sf_note_player() {
 
         sf_note_play_events.push(my_event);
 
-        // Legato?
+        // Sustain?
         if (do_sustain) {
             sf_note_play_events[unchanged_sf_note_event_ind].duration +=
                     get_duration_in_seconds(current_sf_note.get_dur());
@@ -1296,6 +1305,11 @@ function comptoolsSfNotePlayer(player_class)
                         -SF_MAJOR_SIXTH, true));
             }
 
+        }
+        
+        // In case of rests, stop the currently playing MIDI note
+        if (current_event.rest){
+            player_stop_sf_midi_note();
         }
     };
 

@@ -2970,6 +2970,16 @@ comptoolsMIDIPlayer = function () {
 
     };
 
+    // This function just sends buffered off messages. This must be done in
+    // conjunction with CyclicSendOnMessage() function in case of rests
+    this.SendBufferedOffMessages = function(){
+        if (!this.ready){
+            return false;
+        }
+        
+        this.flushNoteBuffer();
+    }
+
     // Special function that first sends buffered off messages
     this.CyclicSendOnMessage = function (notes, velocity) {
 
