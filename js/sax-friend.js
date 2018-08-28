@@ -729,8 +729,6 @@ function comptoolsSfNotePlayerElement(note, dur, sus, rest, afterid)
                 .html(my_sf_note_elem);
     }
     
-    
-
     // Add also ID to canvas
     d3.select("#" + this.elem_id + " .sf-note-canvas")
             .attr('id', this.elem_id + "-canvas");
@@ -745,7 +743,7 @@ function comptoolsSfNotePlayerElement(note, dur, sus, rest, afterid)
 
     // Assign actions
 
-    // Legato
+    // Sustain
     d3.select("#" + this.elem_id + ' .sf-note-sustain')
             .on('click', function () {
                 self.sustain = !self.sustain;
@@ -1601,8 +1599,67 @@ function InstrumentGlueSax() {
     };
 
     this.funHighlightSfNoteListElementNotes = function (obj, act) {
-        self.fingering_chart.draw_fingerings(obj.my_note);
-        self.fingering_chart.draw_notation([obj.elem_id, obj.elem_id, obj.elem_id]);
+        
+        // Go through all the notes in sequence and display correct fingerings
+        var current_note_ids = [];
+        d3.selectAll('#' + SF_NOTE_LIST_ID + ' .' + SF_NOTE_LIST_ITEM_CLASS).
+            each(function () {
+                current_note_ids.push(d3.select(this).attr('id'));
+            });
+        
+        var cur_note_ind = current_note_ids.indexOf(obj.elem_id);
+        
+        // Collect the data
+        var the_notes = []
+        var the_note_ids = []
+        
+        the_notes.push(obj.my_note)
+        the_note_ids.push(obj.elem_id)
+        
+        // Do two iterations to get the other nearby notes
+        // NB! This is done for universality. If at some point it will
+        // be necessary to display more than three notes, then this
+        // part can be extended to accomodate that
+        var LOOKAROUND_DISTANCE = 1;
+        
+        var cur_hist = cur_note_ind;
+        
+        for (var k=0; k<LOOKAROUND_DISTANCE; k++){
+            // Next note in the lookup
+            cur_note_ind++;
+            if (cur_note_ind >= current_note_ids.length){
+                cur_note_ind = 0;
+            }
+
+            var cur_note = sf_note_list.get_obj_by_prop('elem_id',
+                current_note_ids[cur_note_ind]);
+                
+            the_notes.push(cur_note.my_note);
+            the_note_ids.push(current_note_ids[cur_note_ind])
+        }
+        
+        cur_note_ind = cur_hist;
+        
+        for (var k=0; k<LOOKAROUND_DISTANCE; k++){
+            // Next note in the lookup
+            cur_note_ind--;
+            if (cur_note_ind < 0){
+                cur_note_ind = current_note_ids.length-1;
+            }
+
+            var cur_note = sf_note_list.get_obj_by_prop('elem_id',
+                current_note_ids[cur_note_ind]);
+                
+            the_notes.push(cur_note.my_note);
+            the_note_ids.push(current_note_ids[cur_note_ind])
+        }
+          
+        // Shift the notes to achieve correct order
+        the_notes.unshift(the_notes.pop())
+        the_note_ids.unshift(the_note_ids.pop())
+ 
+        self.fingering_chart.draw_fingerings(the_notes);
+        self.fingering_chart.draw_notation(the_note_ids);
         self.updateNotes(transpose_note(obj.my_note, -SF_MAJOR_SIXTH));
     };
 

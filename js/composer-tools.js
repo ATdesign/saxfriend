@@ -178,6 +178,15 @@ function transpose_note(note, semi) {
 
 }
 
+function transpose_notes(notes, semi) {
+    var new_notes = [];
+    for (var k=0; k<notes.length; k++){
+        var semid = get_semitone_distance(notes[k])
+        new_notes.push(from_semitone_distance(semid + semi));
+    }
+    return new_notes;
+}
+
 function add_chord_to_player(note, chord) {
     var my_chord = new comptoolsChordPlayerElement(note, chord);
     chord_list.push(my_chord);
